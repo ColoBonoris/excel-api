@@ -5,6 +5,14 @@
   "repository": "https://github.com/ColoBonoris/excel-api.git",
   "author": "Nicolás Bonoris <nicolas.bonoris194136@alumnos.info.unlp.edu.ar>",
   "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "lint": "eslint --ext .ts src",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
   "dependencies": {
     "bullmq": "^5.41.8",
     "cors": "^2.8.5",
@@ -13,7 +21,8 @@
     "express": "^4.21.2",
     "mongoose": "^8.12.1",
     "multer": "^1.4.5-lts.1",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
