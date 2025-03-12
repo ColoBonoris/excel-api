@@ -2,29 +2,11 @@ import xlsx from "xlsx";
 import fs from "fs";
 import { updateJob } from "../repositories/uploadRepository";
 
-//import { getUploadStatus, saveUploadTask } from "../repositories/uploadRepository";
-// export const uploadFileUseCase = async (): Promise<string> => {
-//     // Queuing the task
-//     queueFileUpload();
-//     // Simulación: Generar un ID aleatorio y devolverlo
-//     return taskId;
-// };
-
-// export const getStatusUseCase = async (taskId: string): Promise<string> => {
-//     // getting the task status
-//     getUploadStatus(taskId);
-//     // Simulación: Retornar un estado aleatorio
-//     const statuses = ["pending", "processing", "done"];
-//     return statuses[Math.floor(Math.random() * statuses.length)];
-// };
-
-// Another solution ---------------------------------------------
-
-interface Mapping {
-  [key: string]: string;
+interface MappingFunction {
+  [key: string]: (value: any) => any;
 }
 
-export const processFile = async (jobId: string, filePath: string, mapping: Mapping): Promise<void> => {
+export const processFile = async (jobId: string, filePath: string, mapping: MappingFunction): Promise<void> => {
   await updateJob(jobId, { status: "processing" });
 
   try {
@@ -40,11 +22,16 @@ export const processFile = async (jobId: string, filePath: string, mapping: Mapp
       let hasError = false;
 
       Object.keys(mapping).forEach((col) => {
-        if (!row[col]) {
+        const converter = mapping[col];
+        const originalValue = row[col];
+
+        const convertedValue = converter ? converter(originalValue) : originalValue;
+        if (convertedValue === null || convertedValue === undefined) {
           errors.push({ col, row: rowIndex });
           hasError = true;
+        } else {
+          transformedRow[col] = convertedValue;
         }
-        transformedRow[mapping[col]] = row[col] || null;
       });
 
       if (!hasError) {
@@ -60,9 +47,7 @@ export const processFile = async (jobId: string, filePath: string, mapping: Mapp
 
     fs.unlinkSync(filePath);
   } catch (error) {
-    console.error("Error procesando archivo:", error);
+    console.error("Error processing file:", error);
     await updateJob(jobId, { status: "failed" });
   }
 };
-
-  

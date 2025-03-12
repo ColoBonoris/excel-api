@@ -1,8 +1,12 @@
 import express from "express";
+import multer from "multer";
 import { uploadFile, getStatus } from "../controllers/uploadController";
 import { authMiddleware } from "../middleware/auth";
 
 const router = express.Router();
+
+// Set up Multer to handle file uploads
+const upload = multer({ dest: "uploads/" });
 
 /**
  * @swagger
@@ -24,16 +28,19 @@ const router = express.Router();
  *                 format: binary
  *               mapping:
  *                 type: string
- *                 description: JSON object with column mapping
+ *                 example: '{"name":"String","age":"Number","nums":"Array<Number>"}'
+ *                 description: JSON object with column mapping (must be a valid JSON string)
  *     responses:
  *       200:
  *         description: Returns a job ID
+ *       400:
+ *         description: File and mapping are required
  *       401:
  *         description: API Key is required
  *       403:
  *         description: Invalid API Key
  */
-router.post("/upload", authMiddleware, uploadFile);
+router.post("/upload", authMiddleware, upload.single("file"), uploadFile);
 
 /**
  * @swagger

@@ -21,21 +21,15 @@ yarn dev
 
 # Run app
 ```
+yarn db:start
+yarn redis:start
 yarn dev
 ```
-  
-<br/>
-<br/>
-<br/>
 
-# MongoDB container
-```
-docker-compose up -d
-docker-compose down
-docker logs -f mongo_db
-docker exec -it mongo_db mongosh -u admin -p secret --authenticationDatabase admin
-```
-  
-<br/>
-<br/>
-<br/>
+# Admitted types for each mapping field
+- Primitives: String, Number, Boolean
+- Arrays: Array<String>, Array<Number>, Array<Boolean>
+- Complex types: Object, Date
+- JSON parsing: JSON (para cualquier objeto JSON)
+- For this first version, these are the only types accepted, fon enhancing, you should modify only `/src/utils/parseMapping.ts` or replace it with another mapping function
+- Mapping function can be way more modular and efficient

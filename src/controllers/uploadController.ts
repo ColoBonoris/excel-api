@@ -1,47 +1,52 @@
-import { Request, RequestHandler, Response } from "express";
+import { Request, Response } from "express";
 import { createJob, getJob } from "../repositories/uploadRepository";
 import { Queue } from "bullmq";
 import { v4 as uuidv4 } from "uuid";
-
-// import { uploadFileUseCase, getStatusUseCase } from "../usecases/uploadUseCase";
-// import { processFile } from "../usecases/uploadUseCase";
-// export const uploadFileController: RequestHandler = async (req: Request, res: Response) => {
-//   try {
-//     const taskId = await uploadFileUseCase();
-//     res.status(202).json({ taskId, message: "Carga iniciada" });
-//   } catch (error) {
-//     console.error("❌ Error en uploadFileController:", error);
-//     res.status(500).json({ message: "Error interno del servidor" });
-//   }
-// };
-// export const getStatusController: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const { id } = req.params;
-//     const status = await getStatusUseCase(id);
-//     res.json({ id, status });
-//   } catch (error) {
-//     console.error("❌ Error en getStatusController:", error);
-//     res.status(500).json({ message: "Error interno del servidor" });
-//   }
-// };
-
-
-/// another sulition ---------------------------------------
+import { parseMapping } from "../tests/utils/parseMapping";
 
 const queue = new Queue("file-processing");
 
 export const uploadFile = async (req: Request, res: Response): Promise<void> => {
-  const jobId = uuidv4();
-  await createJob(jobId);
+  try {
+    console.log("Received Request:", req.body); // Debugging logs
+    console.log("Received File:", req.file);
 
-  await queue.add("processFile", {
-    jobId,
-    filePath: req.file?.path,
-    mapping: JSON.parse(req.body.mapping)
-  });
+    if (!req.file) {
+      res.status(400).json({ error: "File is required" });
+      return;
+    }
+    if (!req.body.mapping) {
+      res.status(400).json({ error: "Mapping is required" });
+      return;
+    }
 
-  res.json({ jobId });
+    let parsedMapping;
+    try {
+      parsedMapping = typeof req.body.mapping === "string"
+        ? JSON.parse(req.body.mapping)
+        : req.body.mapping;
+
+      parseMapping(parsedMapping); // Validate mapping
+    } catch (error: any) {
+      res.status(400).json({ error: `Invalid mapping: ${error.message}` });
+      return;
+    }
+
+    const jobId = uuidv4();
+    await createJob(jobId);
+    await queue.add("processFile", {
+      jobId,
+      filePath: req.file.path,
+      mapping: JSON.stringify(parsedMapping) // Serialize mapping
+    });
+
+    res.json({ jobId });
+  } catch (error) {
+    console.error("Error in uploadFile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
+
 
 export const getStatus = async (req: Request, res: Response): Promise<void> => {
   const job = await getJob(req.params.jobId);

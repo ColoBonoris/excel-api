@@ -19,7 +19,10 @@
     "redis:start": "docker-compose up -d redis",
     "redis:stop": "docker-compose stop redis",
     "redis:restart": "docker-compose restart redis",
-    "redis:clean": "docker-compose rm -f redis && docker volume prune -f"
+    "redis:clean": "docker-compose rm -f redis && docker volume prune -f",
+    "test:generate-excel": "ts-node ./src/tests/utils/generateTestExcel.ts",
+    "test:generate-mapping": "ts-node ./src/tests/utils/generateTestMapping.ts",
+    "test:generate-all": "yarn test:generate-excel && yarn test:generate-mapping"
   },
   "dependencies": {
     "bullmq": "^5.41.9",
