@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import uploadRoutes from "./routes/uploadRoutes";
 import apiKeyRoutes from "./routes/apiKeyRoutes";
+import { setupSwagger } from "./config/swagger";
+
+
 
 dotenv.config();
 
@@ -16,6 +19,9 @@ app.use("/api", apiKeyRoutes); // Adding routes for API keys
 app.get("/", (req, res) => {
   res.send("API up and working");
 });
+
+// Configurar Swagger
+setupSwagger(app);
 
 export default app;
 

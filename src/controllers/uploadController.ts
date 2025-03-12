@@ -52,7 +52,7 @@ export const getStatus = async (req: Request, res: Response): Promise<void> => {
 
   let response: any = { status: job.status };
   if (job.status === "done") {
-    if (job.errors) response.errors = job.errors;
+    if (job.jobErrors) response.errors = job.jobErrors;
     if (job.result) response.result = job.result;
   }
 

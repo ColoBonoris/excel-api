@@ -12,7 +12,7 @@ interface JobResult {
 export interface IJob extends Document {
   _id: string;
   status: "pending" | "processing" | "done" | "failed";
-  jobErrors?: ErrorEntry[]; // Changed from error to jobErrors for mongoose compatibility
+  jobErrors?: ErrorEntry[]; // Changed from error to jobErrors for Mongoose compatibility
   result?: JobResult; // processed JSON data
   createdAt: Date;
   updatedAt: Date;

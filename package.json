@@ -6,7 +6,7 @@
   "author": "Nicolás Bonoris <nicolas.bonoris194136@alumnos.info.unlp.edu.ar>",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts && open http://localhost:3000/api-docs",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",
@@ -15,7 +15,11 @@
     "db:start": "docker-compose up -d",
     "db:stop": "docker-compose down",
     "db:restart": "docker-compose down && docker-compose up -d",
-    "db:clean": "docker-compose down -v"
+    "db:clean": "docker-compose down -v",
+    "redis:start": "docker-compose up -d redis",
+    "redis:stop": "docker-compose stop redis",
+    "redis:restart": "docker-compose restart redis",
+    "redis:clean": "docker-compose rm -f redis && docker volume prune -f"
   },
   "dependencies": {
     "bullmq": "^5.41.9",
@@ -28,6 +32,8 @@
     "mongoose": "^8.12.1",
     "multer": "^1.4.5-lts.1",
     "redis": "^4.7.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",
     "xlsx": "^0.18.5",
     "yarn": "^1.22.22"
@@ -39,6 +45,8 @@
     "@types/mongoose": "^5.11.97",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.13.10",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
     "@types/xlsx": "^0.0.36",
     "cross-env": "^7.0.3",
