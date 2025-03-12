@@ -9,7 +9,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: mydatabase
+      MONGO_INITDB_DATABASE: xlsx-uploader
     volumes:
       - mongo_data:/data/db
 volumes:
