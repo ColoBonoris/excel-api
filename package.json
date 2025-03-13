@@ -7,6 +7,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts && open http://localhost:3000/api-docs",
+    "worker": "ts-node src/workers/uploadWorker.ts",
+    "rabbitmq:start": "docker-compose up -d rabbitmq",
+    "rabbitmq:stop": "docker-compose stop rabbitmq",
+    "rabbitmq:restart": "docker-compose restart rabbitmq",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "jest",
@@ -25,7 +29,7 @@
     "test:generate-all": "yarn test:generate-excel && yarn test:generate-mapping"
   },
   "dependencies": {
-    "bullmq": "^5.41.9",
+    "amqplib": "^0.10.5",
     "cors": "^2.8.5",
     "docker": "^0.2.14",
     "dotenv": "^16.4.7",
@@ -34,7 +38,6 @@
     "ioredis": "^5.6.0",
     "mongoose": "^8.12.1",
     "multer": "^1.4.5-lts.1",
-    "redis": "^4.7.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",
@@ -42,6 +45,7 @@
     "yarn": "^1.22.22"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",

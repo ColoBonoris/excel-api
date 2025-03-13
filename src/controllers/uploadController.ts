@@ -1,22 +1,22 @@
 import { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
 import { createJob, getJob } from "../repositories/uploadRepository";
-import { Queue } from "bullmq";
 import { v4 as uuidv4 } from "uuid";
-import { parseMapping } from "../tests/utils/parseMapping";
+import { parseMapping } from "../utils/parseMapping";
+import { publishToQueue } from "../services/rabbitmqService";
 
-const queue = new Queue("file-processing");
+const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
+
+// Ensure upload directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 export const uploadFile = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("Received Request:", req.body); // Debugging logs
-    console.log("Received File:", req.file);
-
-    if (!req.file) {
-      res.status(400).json({ error: "File is required" });
-      return;
-    }
-    if (!req.body.mapping) {
-      res.status(400).json({ error: "Mapping is required" });
+    if (!req.file || !req.body.mapping) {
+      res.status(400).json({ error: "File and mapping are required" });
       return;
     }
 
@@ -26,18 +26,26 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
         ? JSON.parse(req.body.mapping)
         : req.body.mapping;
 
-      parseMapping(parsedMapping); // Validate mapping
-    } catch (error: any) {
+      parseMapping(parsedMapping);
+    } catch (error) {
       res.status(400).json({ error: `Invalid mapping: ${error.message}` });
       return;
     }
 
+    // Generate unique file path
     const jobId = uuidv4();
+    const filePath = path.join(UPLOADS_DIR, `${jobId}.xlsx`);
+    
+    // Save file to disk
+    fs.renameSync(req.file.path, filePath);
+
     await createJob(jobId);
-    await queue.add("processFile", {
+    
+    // Send job to RabbitMQ with only the file path
+    await publishToQueue("file-processing", {
       jobId,
-      filePath: req.file.path,
-      mapping: JSON.stringify(parsedMapping) // Serialize mapping
+      filePath,
+      mapping: parsedMapping
     });
 
     res.json({ jobId });
@@ -46,7 +54,6 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 export const getStatus = async (req: Request, res: Response): Promise<void> => {
   const job = await getJob(req.params.jobId);
