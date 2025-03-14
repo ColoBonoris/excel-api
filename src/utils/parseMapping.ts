@@ -1,29 +1,52 @@
 export const parseMapping = (mapping: Record<string, string>) => {
-  return Object.entries(mapping).reduce((acc, [key, type]) => {
-    switch (type) {
-      case "String":
-        acc[key] = (value: any) => (typeof value === "string" ? value.trim() : String(value));
-        break;
-      case "Number":
-        acc[key] = (value: any) => {
-          const num = Number(value);
-          return isNaN(num) ? null : num;
-        };
-        break;
-      case "Array<Number>":
-        acc[key] = (value: any) => {
-          try {
-            const arr = JSON.parse(value);
-            return Array.isArray(arr) && arr.every((item) => typeof item === "number") ? arr : null;
-          } catch {
-            return null;
-          }
-        };
-        break;
-      default:
-        throw new Error(`Unknown mapping type: ${type}`);
+  if (typeof mapping !== "object" || mapping === null) {
+    throw new Error("Invalid mapping: must be an object.");
+  }
+
+  const typeMappings: Record<
+    string,
+    (value: any) => { value: any; error?: boolean }
+  > = {
+    "number": (v) => {
+      const num = Number(v);
+      if (isNaN(num)) return { value: null, error: true };
+      return { value: num };
+    },
+    "string": (v) => ({ value: String(v).trim() }),
+    "array<number>": (v) => {
+      try {
+        if (typeof v === "string") {
+          v = v.replace(/\s+/g, ""); // Eliminar espacios dentro del array
+          v = JSON.parse(v); // Intentar parsear si viene como string
+        }
+
+        if (!Array.isArray(v)) return { value: null, error: true };
+
+        const parsedArray = v.map((item) => {
+          const num = Number(item);
+          if (isNaN(num)) return { value: null, error: true };
+          return { value: num };
+        });
+
+        const hasErrors = parsedArray.some((item) => item.error);
+        if (hasErrors) return { value: null, error: true };
+        //@ts-ignore
+        return { value: parsedArray.map((item) => item.value).sort((a, b) => a - b) };
+      } catch (error) {
+        return { value: null, error: true };
+      }
     }
-    return acc;
-  }, {} as Record<string, (value: any) => any>);
+  };
+
+  const normalizedMapping: Record<string, (value: any) => { value: any; error?: boolean }> = {};
+
+  for (const [key, type] of Object.entries(mapping)) {
+    const normalizedType = type.toLowerCase().replace(/\s+/g, ""); // Remove spaces & normalize
+    if (!typeMappings[normalizedType]) {
+      throw new Error(`Unknown mapping type for key '${key}': ${type}`);
+    }
+    normalizedMapping[key.trim()] = typeMappings[normalizedType];
+  }
+
+  return normalizedMapping;
 };
-  

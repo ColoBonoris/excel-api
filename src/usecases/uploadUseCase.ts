@@ -3,7 +3,7 @@ import fs from "fs";
 import { updateJob } from "../repositories/uploadRepository";
 
 interface MappingFunction {
-  [key: string]: (value: any) => any;
+  [key: string]: (value: any) => { value: any; error?: boolean };
 }
 
 export const processFile = async (jobId: string, filePath: string, mapping: MappingFunction): Promise<void> => {
@@ -22,15 +22,21 @@ export const processFile = async (jobId: string, filePath: string, mapping: Mapp
       let hasError = false;
 
       Object.keys(mapping).forEach((col) => {
-        const converter = mapping[col];
-        const originalValue = row[col];
+        try {
+          const converter = mapping[col];
+          const originalValue = row[col];
 
-        const convertedValue = converter ? converter(originalValue) : originalValue;
-        if (convertedValue === null || convertedValue === undefined) {
-          errors.push({ col, row: rowIndex });
+          const { value, error } = converter ? converter(originalValue) : { value: originalValue };
+
+          if (error || value === null || value === undefined) {
+            errors.push({ col, row: rowIndex + 1 }); // rowIndex + 1 para que coincida con la hoja de cálculo
+            hasError = true;
+          } else {
+            transformedRow[col] = value;
+          }
+        } catch (error) {
+          errors.push({ col, row: rowIndex + 1 });
           hasError = true;
-        } else {
-          transformedRow[col] = convertedValue;
         }
       });
 
@@ -44,8 +50,6 @@ export const processFile = async (jobId: string, filePath: string, mapping: Mapp
       jobErrors: errors.length > 0 ? errors : undefined,
       result: transformedData.length > 0 ? { data: transformedData } : undefined
     });
-
-    fs.unlinkSync(filePath);
   } catch (error) {
     console.error("Error processing file:", error);
     await updateJob(jobId, { status: "failed" });

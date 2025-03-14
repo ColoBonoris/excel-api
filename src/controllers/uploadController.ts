@@ -27,7 +27,7 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
         : req.body.mapping;
 
       parseMapping(parsedMapping);
-    } catch (error) {
+    } catch (error: any) {
       res.status(400).json({ error: `Invalid mapping: ${error.message}` });
       return;
     }

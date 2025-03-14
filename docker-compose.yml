@@ -20,8 +20,8 @@ services:
     container_name: rabbitmq_queue
     restart: always
     ports:
-      - "5672:5672"  # Puerto AMQP para la conexión
-      - "15672:15672" # UI de RabbitMQ (http://localhost:15672)
+      - "5672:5672"  # AMQP port
+      - "15672:15672" # RabbitMQ UI (http://localhost:15672)
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest

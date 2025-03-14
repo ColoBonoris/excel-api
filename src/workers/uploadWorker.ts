@@ -1,3 +1,4 @@
+import { connectDB } from "../config/database";
 import amqplib from "amqplib";
 import fs from "fs";
 import { processFile } from "../usecases/uploadUseCase";
@@ -7,11 +8,12 @@ const QUEUE_NAME = "file-processing";
 
 const consumeJobs = async () => {
   try {
+    console.log("⚡ Worker connecting to RabbitMQ...");
     const connection = await amqplib.connect("amqp://guest:guest@localhost:5672");
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE_NAME, { durable: true });
 
-    console.log(`⚡ Worker listening on queue: ${QUEUE_NAME}`);
+    console.log(`✅ Worker listening on queue: ${QUEUE_NAME}`);
 
     channel.consume(QUEUE_NAME, async (msg) => {
       if (msg !== null) {
@@ -30,12 +32,16 @@ const consumeJobs = async () => {
         } catch (error) {
           console.error(`❌ Error processing job ${jobData.jobId}:`, error);
         } finally {
-          // Always delete the file after processing
+          // ✅ Asegurar que el archivo se borre SIEMPRE, incluso si hay errores
           if (fs.existsSync(jobData.filePath)) {
-            fs.unlink(jobData.filePath, (err) => {
-              if (err) console.error(`⚠️ Failed to delete file ${jobData.filePath}:`, err);
-              else console.log(`🗑️ Deleted file ${jobData.filePath}`);
-            });
+            try {
+              fs.unlinkSync(jobData.filePath);
+              console.log(`🗑️ Deleted file: ${jobData.filePath}`);
+            } catch (unlinkError) {
+              console.error(`⚠️ Failed to delete file ${jobData.filePath}:`, unlinkError);
+            }
+          } else {
+            console.warn(`⚠️ File already deleted or not found: ${jobData.filePath}`);
           }
         }
       }
@@ -45,4 +51,11 @@ const consumeJobs = async () => {
   }
 };
 
-consumeJobs();
+const startWorker = async () => {
+  console.log("⏳ Connecting Worker to MongoDB...");
+  await connectDB();  
+  console.log("✅ Connected to MongoDB!");
+  await consumeJobs();
+};
+
+startWorker();
