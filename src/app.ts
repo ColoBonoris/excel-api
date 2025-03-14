@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import uploadRoutes from "./routes/uploadRoutes";
-import apiKeyRoutes from "./routes/apiKeyRoutes";
 import { setupSwagger } from "./config/swagger";
 
 
@@ -14,7 +13,6 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api", uploadRoutes); // endpoints prefix
-app.use("/api", apiKeyRoutes); // Adding routes for API keys
 
 app.get("/", (req, res) => {
   res.send("API up and working");
