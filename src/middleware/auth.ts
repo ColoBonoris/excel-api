@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateApiKey } from "../services/authService";
+import { validateApiKey } from "../infrastructure/services/authService";
 import { ApiKeyType } from "../enums/ApiKeys";
 import { AppError } from "../errors/AppError";
 import { ErrorType } from "../enums/errors";

@@ -1,15 +1,12 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import { AppError } from "../errors/AppError";
 import { ErrorType } from "../enums/errors";
-
-dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://admin:secret@mongo:27017/xlsx-uploader?authSource=admin";
 const isTestEnv = process.env.NODE_ENV === "test";
 
 const MAX_RETRIES = 5;
-const RETRY_DELAY = 5000; // 5 segundos
+const RETRY_DELAY = 5000; // 5 secs
 
 export const connectDB = async () => {
   let attempts = 0;

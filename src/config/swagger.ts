@@ -2,7 +2,6 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
 
-// Swagger configuration
 const options: swaggerJSDoc.Options = {
   definition: {
     openapi: "3.0.0",
@@ -22,15 +21,13 @@ const options: swaggerJSDoc.Options = {
         }
       }
     },
-    security: [{ ApiKeyAuth: [] }] // Apply API Key auth globally
+    security: [{ ApiKeyAuth: [] }] 
   },
-  apis: ["./src/routes/*.ts"], // Path to the annotated files
+  apis: ["./src/routes/*.ts"],
 };
 
-// Generate Swagger docs
 const swaggerSpec = swaggerJSDoc(options);
 
-// Function to set up Swagger in the app
 export const setupSwagger = (app: Express) => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   console.log("📄 Swagger Docs available at: http://localhost:3000/api-docs");

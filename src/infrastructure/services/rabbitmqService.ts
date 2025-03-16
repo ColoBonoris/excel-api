@@ -1,6 +1,6 @@
 import amqplib from "amqplib";
-import { AppError } from "../errors/AppError";
-import { ErrorType } from "../enums/errors";
+import { AppError } from "../../errors/AppError";
+import { ErrorType } from "../../enums/errors";
 
 const QUEUE_NAME = "file-processing";
 const MAX_RETRIES = 5;

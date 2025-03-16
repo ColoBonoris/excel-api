@@ -1,7 +1,4 @@
-version: "3.8"
-
 services:
-
   mongo:
     image: mongo:6
     container_name: mongo_db
@@ -20,7 +17,7 @@ services:
     container_name: rabbitmq_queue
     restart: always
     ports:
-      - "5672:5672"  # AMQP port
+      - "5672:5672" # AMQP port
       - "15672:15672" # RabbitMQ UI (http://localhost:15672)
     environment:
       RABBITMQ_DEFAULT_USER: guest

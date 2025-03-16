@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-import { createJob, getJob } from "../repositories/uploadRepository";
+import { createJob, getJob } from "../../infrastructure/database/repositories/uploadRepository";
 import { v4 as uuidv4 } from "uuid";
-import { parseMapping } from "../utils/parseMapping";
-import { publishToQueue } from "../services/rabbitmqService";
-import { AppError } from "../errors/AppError";
-import { ErrorType } from "../enums/errors";
+import { parseMapping } from "../../utils/parseMapping";
+import { publishToQueue } from "../../infrastructure/services/rabbitmqService";
+import { AppError } from "../../errors/AppError";
+import { ErrorType } from "../../enums/errors";
 
 const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
 
-// Ensure upload directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
@@ -34,16 +33,13 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // Generate unique file path
     const jobId = uuidv4();
     const filePath = path.join(UPLOADS_DIR, `${jobId}.xlsx`);
     
-    // Save file to disk
     fs.renameSync(req.file.path, filePath);
 
     await createJob(jobId);
     
-    // Send job to RabbitMQ with only the file path
     await publishToQueue("file-processing", {
       jobId,
       filePath,

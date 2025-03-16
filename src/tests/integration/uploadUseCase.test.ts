@@ -1,6 +1,6 @@
 import fs from "fs";
 import { parseMapping } from "../../utils/parseMapping";
-import { processFile } from "../../usecases/uploadUseCase";
+import { processFile } from "../../application/uploadUseCase";
 
 jest.mock("../../repositories/uploadRepository", () => ({
   updateJob: jest.fn(),

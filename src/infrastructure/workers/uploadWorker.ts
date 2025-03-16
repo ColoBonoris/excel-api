@@ -1,8 +1,8 @@
-import { connectDB } from "../config/database";
+import { connectDB } from "../../config/database";
 import amqplib from "amqplib";
 import fs from "fs";
-import { processFile } from "../usecases/uploadUseCase";
-import { parseMapping } from "../utils/parseMapping";
+import { processFile } from "../../application/uploadUseCase";
+import { parseMapping } from "../../utils/parseMapping";
 
 const QUEUE_NAME = "file-processing";
 
@@ -32,7 +32,6 @@ const consumeJobs = async () => {
         } catch (error) {
           console.error(`❌ Error processing job ${jobData.jobId}:`, error);
         } finally {
-          // ✅ Asegurar que el archivo se borre SIEMPRE, incluso si hay errores
           if (fs.existsSync(jobData.filePath)) {
             try {
               fs.unlinkSync(jobData.filePath);

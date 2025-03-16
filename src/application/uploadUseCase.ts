@@ -1,6 +1,6 @@
 import xlsx from "xlsx";
 import fs from "fs";
-import { updateJob } from "../repositories/uploadRepository";
+import { updateJob } from "../infrastructure/database/repositories/uploadRepository";
 
 interface MappingFunction {
   [key: string]: (value: any) => { value: any; error?: boolean };
@@ -29,7 +29,7 @@ export const processFile = async (jobId: string, filePath: string, mapping: Mapp
           const { value, error } = converter ? converter(originalValue) : { value: originalValue };
 
           if (error || value === null || value === undefined) {
-            errors.push({ col, row: rowIndex + 1 }); // rowIndex + 1 para que coincida con la hoja de cálculo
+            errors.push({ col, row: rowIndex + 1 });
             hasError = true;
           } else {
             transformedRow[col] = value;

@@ -1,12 +1,9 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
-import uploadRoutes from "./routes/uploadRoutes";
+import uploadRoutes from "./interfaces/routes/uploadRoutes";
 import { setupSwagger } from "./config/swagger";
 import { errorHandler } from "./middleware/errorHandler";
 import { Request, Response, NextFunction } from "express";
-
-dotenv.config();
 
 const app = express();
 

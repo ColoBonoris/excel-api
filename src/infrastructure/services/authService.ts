@@ -1,9 +1,9 @@
-import { ApiKeyType } from "../enums/ApiKeys";
+import { ApiKeyType } from "../../enums/ApiKeys";
 
 export const validateApiKey = (apiKey: string | undefined, keyType: ApiKeyType): boolean => {
   if (!apiKey) return false;
   
-  const expectedKey = process.env[keyType]; // Accede a la variable de entorno dinámica
+  const expectedKey = process.env[keyType];
   
   return apiKey === expectedKey;
 };

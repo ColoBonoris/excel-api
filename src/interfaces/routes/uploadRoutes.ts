@@ -1,12 +1,11 @@
 import express from "express";
 import multer from "multer";
 import { uploadFile, getStatus } from "../controllers/uploadController";
-import { authMiddleware } from "../middleware/auth";
-import { ApiKeyType } from "../enums/ApiKeys";
+import { authMiddleware } from "../../middleware/auth";
+import { ApiKeyType } from "../../enums/ApiKeys";
 
 const router = express.Router();
 
-// Set up Multer to handle file uploads
 const upload = multer({ dest: "uploads/" });
 
 /**
