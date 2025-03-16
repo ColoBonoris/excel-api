@@ -2,7 +2,7 @@ import fs from "fs";
 import { parseMapping } from "../../utils/parseMapping";
 import { processFile } from "../../usecases/uploadUseCase";
 
-jest.mock("../../src/repositories/uploadRepository", () => ({
+jest.mock("../../repositories/uploadRepository", () => ({
   updateJob: jest.fn(),
 }));
 

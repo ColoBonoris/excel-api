@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import { uploadFile, getStatus } from "../controllers/uploadController";
 import { authMiddleware } from "../middleware/auth";
+import { ApiKeyType } from "../enums/ApiKeys";
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ const upload = multer({ dest: "uploads/" });
  *       403:
  *         description: Invalid API Key
  */
-router.post("/upload", authMiddleware, upload.single("file"), uploadFile);
+router.post("/upload", authMiddleware(ApiKeyType.UPLOAD), upload.single("file"), uploadFile);
 
 /**
  * @swagger
@@ -67,6 +68,6 @@ router.post("/upload", authMiddleware, upload.single("file"), uploadFile);
  *       404:
  *         description: Job not found
  */
-router.get("/status/:jobId", authMiddleware, getStatus);
+router.get("/status/:jobId", authMiddleware(ApiKeyType.STATUS), getStatus);
 
 export default router;

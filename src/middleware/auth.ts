@@ -1,16 +1,17 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
+import { validateApiKey } from "../services/authService";
+import { ApiKeyType } from "../enums/ApiKeys";
+import { AppError } from "../errors/AppError";
+import { ErrorType } from "../enums/errors";
 
-export const authMiddleware: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-  const apiKey = req.headers["x-api-key"] as string;
+export const authMiddleware = (keyType: ApiKeyType) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const apiKey = req.header("x-api-key");
 
-  if (!apiKey) {
-    res.status(401).json({ error: "API Key required" });
-  }
+    if (!validateApiKey(apiKey, keyType)) {
+      throw new AppError(ErrorType.UNAUTHORIZED, "Invalid API Key", 401);
+    }
 
-  const isValid = await validateApiKey(apiKey, method);
-  if (!isValid) {
-    res.status(403).json({ error: "Received API Key is either not valid or not active" });
-  }
-
-  next();
+    next();
+  };
 };

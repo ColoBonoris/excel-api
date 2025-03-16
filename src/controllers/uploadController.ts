@@ -5,6 +5,8 @@ import { createJob, getJob } from "../repositories/uploadRepository";
 import { v4 as uuidv4 } from "uuid";
 import { parseMapping } from "../utils/parseMapping";
 import { publishToQueue } from "../services/rabbitmqService";
+import { AppError } from "../errors/AppError";
+import { ErrorType } from "../enums/errors";
 
 const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
 
@@ -16,7 +18,7 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 export const uploadFile = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file || !req.body.mapping) {
-      res.status(400).json({ error: "File and mapping are required" });
+      throw new AppError(ErrorType.VALIDATION_ERROR, "File is required", 400);
       return;
     }
 
@@ -28,7 +30,7 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
 
       parseMapping(parsedMapping);
     } catch (error: any) {
-      res.status(400).json({ error: `Invalid mapping: ${error.message}` });
+      throw new AppError(ErrorType.VALIDATION_ERROR, "Invalid mapping", 400);
       return;
     }
 
@@ -51,14 +53,14 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
     res.json({ jobId });
   } catch (error) {
     console.error("Error in uploadFile:", error);
-    res.status(500).json({ error: "Internal server error" });
+    throw new AppError(ErrorType.UNKNOWN_ERROR, "An unexpected error occurred", 500);
   }
 };
 
 export const getStatus = async (req: Request, res: Response): Promise<void> => {
   const job = await getJob(req.params.jobId);
   if (!job) {
-    res.status(404).json({ error: "Job not found" });
+    throw new AppError(ErrorType.NOT_FOUND, "Job not found", 404);
     return;
   }
 

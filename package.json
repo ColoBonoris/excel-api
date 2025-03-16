@@ -13,7 +13,7 @@
     "rabbitmq:restart": "docker-compose restart rabbitmq",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "jest",
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts",
     "db:start": "docker-compose up -d",
