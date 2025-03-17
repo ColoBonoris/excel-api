@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { AppError } from "../errors/AppError";
 import { ErrorType } from "../enums/errors";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI ;
 const isTestEnv = process.env.NODE_ENV === "test";

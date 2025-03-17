@@ -20,6 +20,8 @@ export const connectRabbitMQ = async () => {
       await channel.assertQueue(QUEUE_NAME, { durable: true });
 
       console.log("✅ Connected to RabbitMQ");
+
+      return
     } catch (error) {
       attempts++;
       console.error(`❌ RabbitMQ connection failed (${attempts}/${MAX_RETRIES})`, error);
