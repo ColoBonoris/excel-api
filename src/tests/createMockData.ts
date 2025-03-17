@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { JobModel } from "../infrastructure/database/models/JobModel";
-import { UserModel } from "../infrastructure/database/models/UserModel";
+import { Job } from "../infrastructure/database/models/Job";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,18 +12,12 @@ const createMockData = async () => {
     console.log("✅ Connected to MongoDB");
 
     // Borrar datos previos
-    await JobModel.deleteMany({});
-    await UserModel.deleteMany({});
+    await Job.deleteMany({});
 
     // Insertar nuevos datos de prueba
-    await JobModel.insertMany([
+    await Job.insertMany([
       { jobId: "job-1", status: "done", result: { data: [] }, jobErrors: [] },
       { jobId: "job-2", status: "pending", result: null, jobErrors: null },
-    ]);
-
-    await UserModel.insertMany([
-      { userId: "user-1", apiKey: "test-upload-key" },
-      { userId: "user-2", apiKey: "test-status-key" },
     ]);
 
     console.log("✅ Mock data inserted successfully!");
