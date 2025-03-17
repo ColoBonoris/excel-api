@@ -24,6 +24,8 @@ describe("uploadRepository", () => {
     await updateJob("test-job", { jobErrors: [{ col: "age", row: 5 }] });
 
     const job = await Job.findOne({ refernceId: "test-job" });
+    
+    expect(job).not.toBeNull();
     //@ts-ignore
     expect(job?.jobErrors.length).toBe(1);
     //@ts-ignore

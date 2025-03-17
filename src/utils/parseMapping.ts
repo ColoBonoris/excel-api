@@ -17,6 +17,10 @@ export const parseMapping = (mapping: Record<string, string>) => {
       try {
         if (typeof v === "string") {
           v = v.replace(/\s+/g, ""); // Eliminar espacios dentro del array
+          // Si no tiene corchetes, agregarlos
+          if (!v.startsWith("[") && !v.endsWith("]")) {
+            v = `[${v}]`;
+          }
           v = JSON.parse(v); // Intentar parsear si viene como string
         }
 

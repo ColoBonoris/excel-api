@@ -37,7 +37,5 @@ afterAll(async () => {
   await mongoose.connection.close();
   await mongoServer.stop();
 
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // ✅ Asegurar cierre de conexiones
-
   console.log("🛑 In-memory MongoDB stopped");
 });
