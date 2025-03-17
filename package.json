@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts && open http://localhost:3000/api-docs",
-    "worker": "ts-node src/workers/uploadWorker.ts",
+    "worker": "ts-node src/infrastructure/workers/uploadWorker.ts",
     "rabbitmq:start": "docker-compose up -d rabbitmq",
     "rabbitmq:stop": "docker-compose stop rabbitmq",
     "rabbitmq:restart": "docker-compose restart rabbitmq",

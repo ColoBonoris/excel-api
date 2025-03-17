@@ -23,7 +23,7 @@ const options: swaggerJSDoc.Options = {
     },
     security: [{ ApiKeyAuth: [] }] 
   },
-  apis: ["./src/routes/*.ts"],
+  apis: ["./src/interfaces/routes/*.ts"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

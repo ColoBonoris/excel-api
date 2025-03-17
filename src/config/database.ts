@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { AppError } from "../errors/AppError";
 import { ErrorType } from "../enums/errors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://admin:secret@mongo:27017/xlsx-uploader?authSource=admin";
 const isTestEnv = process.env.NODE_ENV === "test";
