@@ -7,7 +7,7 @@ describe("parseMapping", () => {
 
     expect(parsed.name("John").value).toBe("John");
     expect(parsed.age("25").value).toBe(25);
-    expect(parsed.scores("3,2,5,1")).toEqual([1,2,3,5]); // Ordenado
+    expect(parsed.scores("3,2,5,1").value).toEqual([1,2,3,5]); // Ordenado
   });
 
   it("should ignore case and extra spaces", () => {
@@ -16,7 +16,7 @@ describe("parseMapping", () => {
 
     expect(parsed.Name("John").value).toBe("John");
     expect(parsed.AGE("30").value).toBe(30);
-    expect(parsed.Scores("4,9,1")).toEqual([1,4,9]); // Ordenado
+    expect(parsed.Scores("4,9,1").value).toEqual([1,4,9]); // Ordenado
   });
 
   it("should return an error for invalid types", () => {
