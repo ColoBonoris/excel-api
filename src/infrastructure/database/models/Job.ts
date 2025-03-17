@@ -10,7 +10,8 @@ interface JobResult {
 }
 
 export interface IJob extends Document {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
+  referenceId: string;
   status: "pending" | "processing" | "done" | "failed";
   jobErrors?: ErrorEntry[];
   result?: JobResult;
@@ -19,7 +20,8 @@ export interface IJob extends Document {
 }
 
 const JobSchema = new mongoose.Schema<IJob>({
-  _id: { type: String, required: true },
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+  referenceId: { type: String, required: true },
   status: { type: String, enum: ["pending", "processing", "done", "failed"], default: "pending" },
   jobErrors: [{ col: { type: String }, row: { type: Number } }],
   result: { type: Object, default: null },

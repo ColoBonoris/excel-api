@@ -16,8 +16,8 @@ const createMockData = async () => {
 
     // Insertar nuevos datos de prueba
     await Job.insertMany([
-      { jobId: "job-1", status: "done", result: { data: [] }, jobErrors: [] },
-      { jobId: "job-2", status: "pending", result: null, jobErrors: null },
+      { referenceId: "job-1", status: "done", result: { data: [] }, jobErrors: [] },
+      { referenceId: "job-2", status: "pending", result: null, jobErrors: null },
     ]);
 
     console.log("✅ Mock data inserted successfully!");
