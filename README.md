@@ -199,9 +199,8 @@ curl -X POST "http://localhost:3000/api/upload" \
 <br/>
 <br/>
 
-# Known issues
+# Potential changes
 - Interrupted jobs are not being take in consideration, for it we should simply use RabbitMq's ACK functionality, but avoiding filling up the queue
 - Testing could be way more extensive
-- Primitives permitted are a considerably short subset of TypesCript primitive datatypes
+- Primitives permitted are a considerably short subset of TypeScript primitive datatypes
 - We could implement more workers for improving performance
-- Error handling is not made as I'd like, we should implement a way more robust solution for a real application
