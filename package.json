@@ -10,7 +10,7 @@
     "worker": "ts-node src/infrastructure/workers/uploadWorker.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
+    "test": "docker-compose up -d && NODE_ENV=test jest --runInBand --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:generate-excel": "ts-node ./src/tests/utils/generateTestExcel.ts",
     "test:generate-mapping": "ts-node ./src/tests/utils/generateTestMapping.ts",

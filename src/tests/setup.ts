@@ -2,6 +2,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Job } from "../infrastructure/database/models/Job";
 import dotenv from "dotenv";
+import { closeRabbitMQConnection } from "../infrastructure/services/rabbitmqService";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
+  await closeRabbitMQConnection();
 
   console.log("🛑 In-memory MongoDB stopped");
 });

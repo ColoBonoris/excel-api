@@ -9,13 +9,14 @@ const QUEUE_NAME = "file-processing";
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 5000; // 5 segundos
 
-let channel: amqplib.Channel;
+let channel: amqplib.Channel | null;
+let connection: amqplib.ChannelModel | null = null;
 
 export const connectRabbitMQ = async () => {
   let attempts = 0;
   while (attempts < MAX_RETRIES) {
     try {
-      const connection = await amqplib.connect("amqp://guest:guest@localhost:5672");
+      connection = await amqplib.connect("amqp://guest:guest@localhost:5672");
       channel = await connection.createChannel();
       await channel.assertQueue(QUEUE_NAME, { durable: true });
 
@@ -35,6 +36,24 @@ export const connectRabbitMQ = async () => {
 
 export const publishToQueue = async (queue: string, message: any) => {
   if (!channel) await connectRabbitMQ();
-  channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
+  channel?.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
   console.log(`📤 Job sent to queue ${queue}:`, message);
 };
+
+export const closeRabbitMQConnection = async () => {
+  try {
+    if (channel) {
+      await channel.close();
+      channel = null;
+    }
+    if (connection) {
+      await connection.close();
+      connection = null;
+    }
+    console.log("🛑 RabbitMQ connection closed");
+  } catch (error) {
+    console.error("⚠️ Failed to close RabbitMQ connection:", error);
+  }
+};
+
+

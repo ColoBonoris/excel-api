@@ -1,13 +1,15 @@
-import { publishToQueue } from "../../infrastructure/services/rabbitmqService";
 import amqplib from "amqplib";
+import { publishToQueue } from "../../infrastructure/services/rabbitmqService";
 
 jest.mock("amqplib", () => ({
   connect: jest.fn().mockResolvedValue({
     createChannel: jest.fn().mockResolvedValue({
       assertQueue: jest.fn(),
       sendToQueue: jest.fn(),
+      close: jest.fn()
     }),
-  }),
+    close: jest.fn()
+  })
 }));
 
 describe("RabbitMQ Service", () => {

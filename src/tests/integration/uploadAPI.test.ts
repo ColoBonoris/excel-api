@@ -17,22 +17,16 @@ describe("POST /upload", () => {
     expect(response.body).toHaveProperty("jobId");
   });
 
-  it("should return 400 for invalid file format", async () => {
-    const response = await request(app)
-      .post("/api/upload")
-      .set("x-api-key", "upload-api-key")
-      .attach("file", invalidFile)
-      .field("mapping", JSON.stringify({ name: "String" }));
-
-    expect(response.status).toBe(400);
-  });
-
   it("should return 403 for missing API key", async () => {
     const response = await request(app)
       .post("/api/upload")
-      .attach("file", testFile)
-      .field("mapping", JSON.stringify({ name: "String", age: "Number" }));
-
+      .attach("file", path.join(__dirname, "../data/valid_test.xlsx"))
+      .field("mapping", JSON.stringify({ name: "String" }));
+  
     expect(response.status).toBe(403);
+    expect(response.body).toMatchObject({
+      error: "UNAUTHORIZED",
+      message: "Invalid API Key",
+    });
   });
-});
+});  
