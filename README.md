@@ -2,9 +2,6 @@
 
 - Docker should be installed to run the complete service, it runs MongoDB and RabbitMQ services, fundamental to the application's functionality
 
-<br/>
-<br/>
-<br/>
 
 # Installation
 
@@ -15,9 +12,6 @@ yarn install
 cp .env.example .env
 ```
 
-<br/>
-<br/>
-<br/>
 
 # Run app
 
@@ -27,9 +21,6 @@ yarn worker
 yarn dev
 ```
 
-<br/>
-<br/>
-<br/>
 
 # Admitted types for each mapping field
 
@@ -38,9 +29,6 @@ yarn dev
 - Mapping function can be way more modular and efficient
 - For adapting to the specifications, `Array <Number>` fields are ordered ascendent when mapping
 
-<br/>
-<br/>
-<br/>
 
 # Interacting with the API
 
@@ -195,12 +183,9 @@ curl -X POST "http://localhost:3000/api/upload" \
 | `Invalid value for Number`      | A value could not be converted to a number.    |
 | `Invalid item in Array<Number>` | A non-numeric value was found inside an array. |
 
-<br/>
-<br/>
-<br/>
 
 # Potential changes
-- Interrupted jobs are not being take in consideration, for it we should simply use RabbitMq's ACK functionality, but avoiding filling up the queue
+- Interrupted jobs are not being take in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
 - Testing could be way more extensive
 - Primitives permitted are a considerably short subset of TypeScript primitive datatypes
 - We could implement more workers for improving performance
