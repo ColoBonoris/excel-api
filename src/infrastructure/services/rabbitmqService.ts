@@ -1,6 +1,6 @@
 import amqplib from "amqplib";
 import { AppError } from "../../errors/AppError";
-import { ErrorType } from "../../enums/errors";
+import { ErrorType } from "../../enums/errorTypes";
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -26,7 +26,7 @@ export const connectRabbitMQ = async () => {
       attempts++;
       console.error(`❌ RabbitMQ connection failed (${attempts}/${MAX_RETRIES})`, error);
       if (attempts === MAX_RETRIES) {
-        throw new AppError(ErrorType.QUEUE_ERROR, "Unable to connect to RabbitMQ", 503);
+        throw new AppError(ErrorType.QUEUE_ERROR);
       }
       await new Promise((res) => setTimeout(res, RETRY_DELAY));
     }

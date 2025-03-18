@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { AppError } from "../errors/AppError";
-import { ErrorType } from "../enums/errors";
+import { ErrorType } from "../enums/errorTypes";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -25,7 +25,7 @@ export const connectDB = async () => {
       attempts++;
       console.error(`❌ MongoDB connection failed (${attempts}/${MAX_RETRIES})`, error);
       if (attempts === MAX_RETRIES && !isTestEnv) {
-        throw new AppError(ErrorType.DATABASE_ERROR, "Unable to connect to MongoDB", 503);
+        throw new AppError(ErrorType.DATABASE_ERROR);
       }
       await new Promise((res) => setTimeout(res, RETRY_DELAY));
     }

@@ -4,7 +4,7 @@ import path from "path";
 
 describe("POST /upload", () => {
   const testFile = path.join(__dirname, "../data/valid_test.xlsx");
-  const invalidFile = path.join(__dirname, "../data/invalid_test.xlsx");
+  const invalidFile = path.join(__dirname, "../data/descarga.gif");
 
   it("should return 200 and a job ID for valid uploads", async () => {
     const response = await request(app)

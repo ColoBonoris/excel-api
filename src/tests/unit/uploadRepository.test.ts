@@ -23,7 +23,7 @@ describe("uploadRepository", () => {
   it("should add errors to job when updating", async () => {
     await updateJob("test-job", { jobErrors: [{ col: "age", row: 5 }] });
 
-    const job = await Job.findOne({ refernceId: "test-job" });
+    const job = await Job.findOne({ referenceId: "test-job" });
     
     expect(job).not.toBeNull();
     //@ts-ignore
