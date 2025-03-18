@@ -3,10 +3,14 @@ import mongoose from "mongoose";
 import { Job } from "../infrastructure/database/models/Job";
 import dotenv from "dotenv";
 import { closeRabbitMQConnection } from "../infrastructure/services/rabbitmqService";
+import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
 let mongoServer: MongoMemoryServer;
+const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
+
 
 beforeAll(async () => {
   console.log("⏳ Setting up test environment...");
@@ -31,9 +35,29 @@ beforeAll(async () => {
   console.log("✅ Test data inserted");
 });
 
+const cleanTestUploads = () => {
+  if (!fs.existsSync(UPLOADS_DIR)) return;
+
+  fs.readdir(UPLOADS_DIR, (err, files) => {
+    if (err) {
+      console.error("❌ Error reading uploads directory:", err);
+      return;
+    }
+
+    files.forEach((file) => {
+      const filePath = path.join(UPLOADS_DIR, file);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error(`⚠️ Failed to delete ${filePath}:`, err);
+        else console.log(`🗑️ Deleted test file: ${filePath}`);
+      });
+    });
+  });
+};
+
 afterAll(async () => {
   console.log("🛑 Cleaning up test environment...");
 
+  cleanTestUploads()
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
