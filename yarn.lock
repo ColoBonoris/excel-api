@@ -2911,6 +2911,7 @@ __metadata:
     express: "npm:^4.21.2"
     husky: "npm:^9.1.7"
     jest: "npm:^29.7.0"
+    mongodb: "npm:^6.15.0"
     mongodb-memory-server: "npm:^10.1.4"
     mongoose: "npm:^8.12.1"
     multer: "npm:^1.4.5-lts.1"
@@ -4939,6 +4940,40 @@ __metadata:
     mongodb-memory-server-core: "npm:10.1.4"
     tslib: "npm:^2.7.0"
   checksum: 10c0/68f58700407610beb7cbe62f67e2ddde3e976805678ea6ec027534848909c84bfae0fca0556cefd3fc9d66fbdcaec50576c56bb8d07e79120c9db7221b4f3759
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:^6.15.0":
+  version: 6.15.0
+  resolution: "mongodb@npm:6.15.0"
+  dependencies:
+    "@mongodb-js/saslprep": "npm:^1.1.9"
+    bson: "npm:^6.10.3"
+    mongodb-connection-string-url: "npm:^3.0.0"
+  peerDependencies:
+    "@aws-sdk/credential-providers": ^3.188.0
+    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
+    gcp-metadata: ^5.2.0
+    kerberos: ^2.0.1
+    mongodb-client-encryption: ">=6.0.0 <7"
+    snappy: ^7.2.2
+    socks: ^2.7.1
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/zstd":
+      optional: true
+    gcp-metadata:
+      optional: true
+    kerberos:
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+    socks:
+      optional: true
+  checksum: 10c0/e5038ef81982e9c06b4da727e97e36c363b27a710e41b8d1cba13142d08063bbb9d0a47832412a94facdacb51e85b368c2a685f4e9e218c12bc8f97fcdb84596
   languageName: node
   linkType: hard
 
