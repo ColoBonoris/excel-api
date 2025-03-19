@@ -1,0 +1,32 @@
+import request from "supertest";
+import app from "../../app";
+import path from "path";
+
+describe("POST /upload", () => {
+  const testFile = path.join(__dirname, "../data/valid_test.xlsx");
+  const invalidFile = path.join(__dirname, "../data/descarga.gif");
+
+  it("should return 200 and a job ID for valid uploads", async () => {
+    const response = await request(app)
+      .post("/api/upload")
+      .set("x-api-key", "upload-api-key")
+      .attach("file", testFile)
+      .field("mapping", JSON.stringify({ name: "String", age: "Number", scores: "Array<Number>" }));
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("jobId");
+  });
+
+  it("should return 403 for missing API key", async () => {
+    const response = await request(app)
+      .post("/api/upload")
+      .attach("file", path.join(__dirname, "../data/valid_test.xlsx"))
+      .field("mapping", JSON.stringify({ name: "String" }));
+  
+    expect(response.status).toBe(403);
+    expect(response.body).toMatchObject({
+      error: "UNAUTHORIZED",
+      message: "Invalid API Key",
+    });
+  });
+});  
