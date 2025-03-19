@@ -11,7 +11,6 @@ conn.once("open", () => {
   gridFSBucket = new GridFSBucket(conn.db, { bucketName: "uploads" });
 });
 
-// 🔹 Función para guardar datos pesados en GridFS
 const saveToGridFS = async (jobId: string, data: any, fileType: "result" | "errors"): Promise<mongoose.Types.ObjectId> => {
   return new Promise((resolve, reject) => {
     const fileId = new mongoose.Types.ObjectId();
@@ -27,7 +26,6 @@ const saveToGridFS = async (jobId: string, data: any, fileType: "result" | "erro
   });
 };
 
-// 🔹 Función para obtener datos desde GridFS
 const getFromGridFS = async (fileId: mongoose.Types.ObjectId): Promise<any> => {
   return new Promise((resolve, reject) => {
     let jsonData = "";
@@ -40,13 +38,11 @@ const getFromGridFS = async (fileId: mongoose.Types.ObjectId): Promise<any> => {
   });
 };
 
-// 🔹 Crear un nuevo Job
 export const createJob = async (jobId: string): Promise<IJob> => {
   const job = new Job({ referenceId: jobId });
   return await job.save();
 };
 
-// 🔹 Actualizar un Job (soporta GridFS)
 export const updateJob = async (jobId: string, data: Partial<IJob>): Promise<IJob | null> => {
   const updateData: Partial<IJob> = {};
 
@@ -67,7 +63,6 @@ export const updateJob = async (jobId: string, data: Partial<IJob>): Promise<IJo
   );
 };
 
-// 🔹 Obtener un Job (recupera los datos de GridFS si existen)
 export const getJob = async (jobId: string): Promise<IJob | null> => {
   const job = await Job.findOne({ referenceId: jobId }).lean();
   if (!job) return null;
@@ -78,13 +73,11 @@ export const getJob = async (jobId: string): Promise<IJob | null> => {
   return job;
 };
 
-// 🔹 Eliminar archivos innecesarios en GridFS
 export const deleteJobData = async (job: IJob) => {
   if (job.resultId) await gridFSBucket.delete(job.resultId);
   if (job.jobErrorsId) await gridFSBucket.delete(job.jobErrorsId);
 };
 
-// 🔹 Eliminar un Job y sus archivos
 export const deleteJob = async (jobId: string): Promise<void> => {
   const job = await Job.findOne({ referenceId: jobId });
   if (job) await deleteJobData(job);
