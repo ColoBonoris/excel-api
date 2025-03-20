@@ -1,7 +1,8 @@
+// src/usecases/processExcelFile.ts
 import fs from "fs";
 import path from "path";
 import { updateJob } from "../infrastructure/database/repositories/uploadRepository";
-import { parseMapping } from "../utils/parseMapping";
+import { parseMapping, MappingItem } from "../utils/parseMapping";
 import {
   insertChunk,
   CHUNK_SIZE_RESULT,
@@ -12,23 +13,23 @@ import { ErrorEntry } from "../infrastructure/database/models/Error";
 const ExcelJS = require("exceljs");
 
 /**
- * processExcelFile:
  * - Ignora el header del Excel (fila #1)
- * - Usa indices de columna para parsear celdas (col0..colN)
- * - Almacena filas y errores en chunking.
+ * - Usa la orden de `rawMapping` para parsear celdas
+ * - Almacena filas y errores en chunking,
+ *   pero con las keys definidas en rawMapping (ej "name","age","nums")
  */
 export async function processExcelFile(
   jobId: string,
   filePath: string,
-  rawMapping: Record<number, string> // e.g. {0:"String",1:"Number",2:"Number",...}
+  rawMapping: Record<string, string> // e.g. { name:"String", age:"Number", nums:"Array<Number>" }
 ) {
   // Marcamos "processing"
   await updateJob(jobId, { status: "processing" });
 
   try {
-    // 1) parseMapping -> crea mappingFunctions[c] para c=0..n-1
-    const mappingFunctions = parseMapping(rawMapping);
-    const numCols = Object.keys(mappingFunctions).length;
+    // parseMapping => array: [ { key: "name", parseFn }, { key: "age", parseFn }, ... ]
+    const mappingArray: MappingItem[] = parseMapping(rawMapping);
+    const numCols = mappingArray.length;
 
     const fullPath = path.resolve(filePath);
     const workbookReader = new ExcelJS.stream.xlsx.WorkbookReader(fullPath, {
@@ -37,61 +38,50 @@ export async function processExcelFile(
       worksheets: "emit",
     });
 
-    // Buffers y logica de chunk
+    // Buffers y chunk logic
     let resultBuffer: any[] = [];
     let errorBuffer: any[] = [];
     let resultChunkIdx = 0;
     let errorChunkIdx = 0;
 
-    let headerSkipped = false; // Para saltar la 1ra fila (header) si no lo usas
+    let headerSkipped = false; // saltamos la 1ra fila
 
     workbookReader.on("worksheet", (worksheet: any) => {
       worksheet.on("row", (row: any) => {
         const rowIndex = row.number;
-        const rowData = row.values; // [undef, cell1, cell2, ...]
+        const rowData = row.values; // [undef, cell1, cell2, cell3...]
 
-        console.log("Row", rowIndex, rowData)
-
-        // Saltar la primera fila si no quieres usarla
+        // Saltar la primera fila
         if (!headerSkipped) {
           headerSkipped = true;
           return;
         }
 
-        // Para cada fila real
         const rowObj: Record<string, any> = {};
         const rowErrors: ErrorEntry[] = [];
 
-        // Recorremos 0..(numCols-1)
+        // Recorremos mappingArray para parsear cada columna
         for (let c = 0; c < numCols; c++) {
+          const { key, parseFn } = mappingArray[c];
+          // rowData[c+1] => la celda real
+          const cellValue = rowData[c + 1];
 
-
-          const converter = mappingFunctions[c];
-          const cellValue = rowData[c + 1]; // c+1 => en row.values
-
-          console.log(converter);
-          console.log(cellValue);
-          
-          
-
-          if (!converter) {
-            // no hay converter -> error en esa celda
-            rowObj[`col${c}`] = undefined;
+          if (!parseFn) {
+            rowObj[key] = undefined;
             rowErrors.push({ col: c + 1, row: rowIndex });
             continue;
           }
 
-          const { value, error } = converter(cellValue);
+          const { value, error } = parseFn(cellValue);
           if (error) {
-            // Celda con error => undefined
-            rowObj[`col${c}`] = undefined;
+            rowObj[key] = undefined;
             rowErrors.push({ col: c + 1, row: rowIndex });
           } else {
-            rowObj[`col${c}`] = value;
+            rowObj[key] = value;
           }
         }
 
-        // Agregamos la fila con celdas undefined en resultBuffer
+        // Agregamos la fila en resultBuffer
         resultBuffer.push(rowObj);
         if (resultBuffer.length >= CHUNK_SIZE_RESULT) {
           insertChunk(jobId, false, resultChunkIdx, resultBuffer);
@@ -99,7 +89,7 @@ export async function processExcelFile(
           resultBuffer = [];
         }
 
-        // Guardamos los errores de celda
+        // Agregamos errores de celda
         if (rowErrors.length > 0) {
           rowErrors.forEach(err => errorBuffer.push(err));
           if (errorBuffer.length >= CHUNK_SIZE_ERRORS) {
@@ -122,14 +112,13 @@ export async function processExcelFile(
     });
 
     workbookReader.on("end", async () => {
-      // Volcar buffers pendientes
+      // Vaciamos buffers
       if (resultBuffer.length > 0) {
         await insertChunk(jobId, false, resultChunkIdx, resultBuffer);
       }
       if (errorBuffer.length > 0) {
         await insertChunk(jobId, true, errorChunkIdx, errorBuffer);
       }
-      // Marcamos "done"
       await updateJob(jobId, { status: "done" });
       cleanupFile(fullPath);
     });

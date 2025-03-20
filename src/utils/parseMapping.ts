@@ -5,29 +5,31 @@ export interface ParsedResult {
   error?: boolean;
 }
 
+export interface MappingItem {
+  key: string; // la clave original en rawMapping (p.ej. "name", "age")
+  parseFn: (val: any) => ParsedResult;
+}
+
 /**
- * Recibe un mapping del estilo:
+ * parseMapping recibe un `rawMapping` como:
  * {
  *   "name": "String",
  *   "age": "Number",
  *   "nums": "Array<Number>"
  * }
- * Devuelve un objeto:
- * {
- *   "name": (v) => { value, error },
- *   "age":  (v) => { value, error },
- *   "nums": (v) => { value, error }
- * }
+ * y retorna un array en el mismo orden de propiedades:
+ * [
+ *   { key: "name",  parseFn: (val)=>{...} },
+ *   { key: "age",   parseFn: (val)=>{...} },
+ *   { key: "nums",  parseFn: (val)=>{...} }
+ * ]
  */
-export function parseMapping(mapping: Record<string, string>) {
-  if (typeof mapping !== "object" || mapping === null) {
+export function parseMapping(rawMapping: Record<string, string>): MappingItem[] {
+  if (typeof rawMapping !== "object" || rawMapping === null) {
     throw new Error("Invalid mapping: must be a non-null object.");
   }
 
-  const typeMappings: Record<
-    string,
-    (val: any) => ParsedResult
-  > = {
+  const typeMappings: Record<string, (val: any) => ParsedResult> = {
     "number": (val: any) => {
       const num = Number(val);
       if (isNaN(num)) return { value: null, error: true };
@@ -46,32 +48,42 @@ export function parseMapping(mapping: Record<string, string>) {
           }
           val = JSON.parse(val);
         }
-        if (!Array.isArray(val)) return { value: null, error: true };
+        if (!Array.isArray(val)) {
+          return { value: null, error: true };
+        }
 
         const parsedArray = val.map((item) => {
-          const num = Number(item);
-          if (isNaN(num)) return { value: null, error: true };
-          return { value: num };
+          const n = Number(item);
+          if (isNaN(n)) return { value: null, error: true };
+          return { value: n };
         });
-        const hasError = parsedArray.some((x) => x.error);
-        if (hasError) return { value: null, error: true };
+        if (parsedArray.some((x) => x.error)) {
+          return { value: null, error: true };
+        }
+        // ordenamos
         //@ts-ignore
-        return { value: parsedArray.map((x) => x.value).sort((a, b) => a - b) };
-      } catch (error) {
-        return { value: undefined, error: true };
+        const sorted = parsedArray.map(x => x.value).sort((a, b) => a - b);
+        return { value: sorted };
+      } catch {
+        return { value: null, error: true };
       }
     }
   };
 
-  const normalizedMapping: Record<string, (val: any) => ParsedResult> = {};
+  const result: MappingItem[] = [];
 
-  for (const [colKey, typeName] of Object.entries(mapping)) {
-    const normalizedType = typeName.toLowerCase().replace(/\s+/g, "");
+  for (const [rawKey, rawType] of Object.entries(rawMapping)) {
+    // normalizar el tipo
+    const normalizedType = rawType.trim().toLowerCase().replace(/\s+/g, "");
     if (!typeMappings[normalizedType]) {
-      throw new Error(`Unknown mapping type for key "${colKey}": ${typeName}`);
+      throw new Error(`Unknown mapping type for key "${rawKey}": ${rawType}`);
     }
-    normalizedMapping[colKey.trim()] = typeMappings[normalizedType];
+
+    // no normalizamos la key, para devolverla tal cual (o si deseas, podés normalizar a .trim() etc.)
+    // pero la idea es que sea la misma que en rawMapping
+    const parseFn = typeMappings[normalizedType];
+    result.push({ key: rawKey, parseFn });
   }
 
-  return normalizedMapping;
+  return result;
 }
