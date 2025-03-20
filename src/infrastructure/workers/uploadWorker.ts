@@ -1,8 +1,7 @@
 import { connectDB } from "../../config/database";
 import amqplib from "amqplib";
 import fs from "fs";
-import { processFile } from "../../application/uploadUseCase";
-import { parseMapping } from "../../utils/parseMapping";
+import { processExcelFile } from "../../application/excelProcessor";
 
 const QUEUE_NAME = "file-processing";
 
@@ -15,36 +14,30 @@ const consumeJobs = async () => {
 
     console.log(`✅ Worker listening on queue: ${QUEUE_NAME}`);
 
-    channel.consume(QUEUE_NAME, async (msg) => {
-      if (msg !== null) {
-        const jobData = JSON.parse(msg.content.toString());
-        console.log(`🔄 Processing job ${jobData.jobId}...`);
+    channel.consume(
+      QUEUE_NAME,
+      async (msg) => {
+        if (msg !== null) {
+          const jobData = JSON.parse(msg.content.toString());
+          console.log(`🔄 Processing job ${jobData.jobId}...`);
 
-        try {
-          if (!fs.existsSync(jobData.filePath)) {
-            throw new Error(`❌ File not found: ${jobData.filePath}`);
-          }
-
-          const mappingFunctions = parseMapping(jobData.mapping);
-          await processFile(jobData.jobId, jobData.filePath, mappingFunctions);
-
-          console.log(`✅ Job ${jobData.jobId} completed.`);
-        } catch (error) {
-          console.error(`❌ Error processing job ${jobData.jobId}:`, error);
-        } finally {
-          if (fs.existsSync(jobData.filePath)) {
-            try {
-              fs.unlinkSync(jobData.filePath);
-              console.log(`🗑️ Deleted file: ${jobData.filePath}`);
-            } catch (unlinkError) {
-              console.error(`⚠️ Failed to delete file ${jobData.filePath}:`, unlinkError);
+          try {
+            if (!fs.existsSync(jobData.filePath)) {
+              throw new Error(`❌ File not found: ${jobData.filePath}`);
             }
-          } else {
-            console.warn(`⚠️ File already deleted or not found: ${jobData.filePath}`);
+
+            const rawMapping = jobData.mapping;
+
+            await processExcelFile(jobData.jobId, jobData.filePath, rawMapping);
+
+            console.log(`✅ Job ${jobData.jobId} completed.`);
+          } catch (error) {
+            console.error(`❌ Error processing job ${jobData.jobId}:`, error);
           }
         }
-      }
-    }, { noAck: true });
+      },
+      { noAck: true }
+    );
   } catch (error) {
     console.error("❌ Failed to connect to RabbitMQ:", error);
   }
@@ -52,7 +45,7 @@ const consumeJobs = async () => {
 
 const startWorker = async () => {
   console.log("⏳ Connecting Worker to MongoDB...");
-  await connectDB();  
+  await connectDB();
   console.log("✅ Connected to MongoDB!");
   await consumeJobs();
 };

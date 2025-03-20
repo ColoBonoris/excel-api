@@ -1,56 +1,77 @@
-export const parseMapping = (mapping: Record<string, string>) => {
+// src/utils/parseMapping.ts
+
+export interface ParsedResult {
+  value: any;
+  error?: boolean;
+}
+
+/**
+ * Recibe un mapping del estilo:
+ * {
+ *   "name": "String",
+ *   "age": "Number",
+ *   "nums": "Array<Number>"
+ * }
+ * Devuelve un objeto:
+ * {
+ *   "name": (v) => { value, error },
+ *   "age":  (v) => { value, error },
+ *   "nums": (v) => { value, error }
+ * }
+ */
+export function parseMapping(mapping: Record<string, string>) {
   if (typeof mapping !== "object" || mapping === null) {
-    throw new Error("Invalid mapping: must be an object.");
+    throw new Error("Invalid mapping: must be a non-null object.");
   }
 
   const typeMappings: Record<
     string,
-    (value: any) => { value: any; error?: boolean }
+    (val: any) => ParsedResult
   > = {
-    "number": (v) => {
-      const num = Number(v);
+    "number": (val: any) => {
+      const num = Number(val);
       if (isNaN(num)) return { value: null, error: true };
       return { value: num };
     },
-    "string": (v) => ({ value: String(v).trim() }),
-    "array<number>": (v) => {
+    "string": (val: any) => {
+      return { value: val == null ? "" : String(val).trim() };
+    },
+    "array<number>": (val: any) => {
       try {
-        if (typeof v === "string") {
-          v = v.replace(/\s+/g, ""); // Eliminar espacios dentro del array
-          // Si no tiene corchetes, agregarlos
-          if (!v.startsWith("[") && !v.endsWith("]")) {
-            v = `[${v}]`;
+        if (typeof val === "string") {
+          val = val.replace(/\s+/g, "");
+          if (!val.startsWith("[") && !val.endsWith("]")) {
+            // "1,2,3" => "[1,2,3]"
+            val = `[${val}]`;
           }
-          v = JSON.parse(v); // Intentar parsear si viene como string
+          val = JSON.parse(val);
         }
+        if (!Array.isArray(val)) return { value: null, error: true };
 
-        if (!Array.isArray(v)) return { value: null, error: true };
-
-        const parsedArray = v.map((item) => {
+        const parsedArray = val.map((item) => {
           const num = Number(item);
           if (isNaN(num)) return { value: null, error: true };
           return { value: num };
         });
-
-        const hasErrors = parsedArray.some((item) => item.error);
-        if (hasErrors) return { value: null, error: true };
+        const hasError = parsedArray.some((x) => x.error);
+        if (hasError) return { value: null, error: true };
         //@ts-ignore
-        return { value: parsedArray.map((item) => item.value).sort((a, b) => a - b) };
+        return { value: parsedArray.map((x) => x.value).sort((a, b) => a - b) };
       } catch (error) {
-        return { value: null, error: true };
+        return { value: undefined, error: true };
       }
     }
   };
 
-  const normalizedMapping: Record<string, (value: any) => { value: any; error?: boolean }> = {};
+  const normalizedMapping: Record<string, (val: any) => ParsedResult> = {};
 
-  for (const [key, type] of Object.entries(mapping)) {
-    const normalizedType = type.toLowerCase().replace(/\s+/g, ""); // Remove spaces & normalize
+  for (const [colKey, typeName] of Object.entries(mapping)) {
+    const normalizedType = typeName.toLowerCase().replace(/\s+/g, "");
     if (!typeMappings[normalizedType]) {
-      throw new Error(`Unknown mapping type for key '${key}': ${type}`);
+      throw new Error(`Unknown mapping type for key "${colKey}": ${typeName}`);
     }
-    normalizedMapping[key.trim()] = typeMappings[normalizedType];
+    normalizedMapping[colKey.trim()] = typeMappings[normalizedType];
   }
 
   return normalizedMapping;
-};
+}

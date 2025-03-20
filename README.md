@@ -21,6 +21,12 @@ yarn worker
 yarn dev
 ```
 
+# Potential changes
+- Interrupted jobs are not being take in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
+- Testing could be way more extensive
+- Primitives permitted are a considerably short subset of TypeScript primitive datatypes
+- We could implement more workers for improving performance
+
 
 # Admitted types for each mapping field
 
@@ -184,8 +190,4 @@ curl -X POST "http://localhost:3000/api/upload" \
 | `Invalid item in Array<Number>` | A non-numeric value was found inside an array. |
 
 
-# Potential changes
-- Interrupted jobs are not being take in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
-- Testing could be way more extensive
-- Primitives permitted are a considerably short subset of TypeScript primitive datatypes
-- We could implement more workers for improving performance
+

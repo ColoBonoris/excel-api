@@ -47,7 +47,7 @@ router.post("/upload", authMiddleware(ApiKeyType.UPLOAD), upload.single("file"),
  * @swagger
  * /status/{jobId}:
  *   get:
- *     summary: Get the status of a processed file
+ *     summary: Get the status (and optional paginated chunks) of a processed file
  *     tags: [Uploads]
  *     security:
  *       - ApiKeyAuth: []
@@ -58,9 +58,47 @@ router.post("/upload", authMiddleware(ApiKeyType.UPLOAD), upload.single("file"),
  *         schema:
  *           type: string
  *         description: ID of the job to check
+ *       - in: query
+ *         name: resultPage
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 1-based page index for the result data chunk (100 rows per page)
+ *       - in: query
+ *         name: errorPage
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: 1-based page index for the error data chunk (1,000 rows per page)
  *     responses:
  *       200:
- *         description: Returns the job status and errors/results if completed
+ *         description: Returns the job status. If the job is done, returns the requested page of result/error data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: The current job status (e.g., pending, processing, done, failed)
+ *                 resultPage:
+ *                   type: integer
+ *                   description: Page index requested for result chunk
+ *                 errorPage:
+ *                   type: integer
+ *                   description: Page index requested for error chunk
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   description: Array of result rows for this page
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   description: Array of error rows for this page
  *       401:
  *         description: API Key is required
  *       403:

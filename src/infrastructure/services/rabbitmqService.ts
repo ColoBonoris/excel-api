@@ -7,7 +7,7 @@ dotenv.config()
 
 const QUEUE_NAME = "file-processing";
 const MAX_RETRIES = 5;
-const RETRY_DELAY = 5000; // 5 segundos
+const RETRY_DELAY = 5000; // 5 secs
 
 let channel: amqplib.Channel | null;
 let connection: amqplib.ChannelModel | null = null;

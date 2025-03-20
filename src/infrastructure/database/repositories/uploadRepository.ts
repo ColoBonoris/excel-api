@@ -6,9 +6,7 @@ export const createJob = async (jobId: string): Promise<IJob> => {
 };
 
 export const updateJob = async (jobId: string, data: Partial<IJob>): Promise<IJob | null> => {
-  // findoneandupdate with referenceid = jobid
-  return await Job.findOneAndUpdate
-  (
+  return await Job.findOneAndUpdate(
     { referenceId: jobId },
     { $set: data },
     { new: true }
@@ -16,5 +14,9 @@ export const updateJob = async (jobId: string, data: Partial<IJob>): Promise<IJo
 };
 
 export const getJob = async (jobId: string): Promise<IJob | null> => {
-  return await Job.findOne({referenceId: jobId});
+  return await Job.findOne({ referenceId: jobId });
+};
+
+export const deleteJob = async (jobId: string): Promise<void> => {
+  await Job.deleteOne({ referenceId: jobId });
 };
