@@ -1,9 +1,9 @@
 import amqplib from "amqplib";
 import { AppError } from "../../errors/AppError";
 import { ErrorType } from "../../enums/errorTypes";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 const QUEUE_NAME = "file-processing";
 const MAX_RETRIES = 5;
@@ -22,10 +22,13 @@ export const connectRabbitMQ = async () => {
 
       console.log("✅ Connected to RabbitMQ");
 
-      return
+      return;
     } catch (error) {
       attempts++;
-      console.error(`❌ RabbitMQ connection failed (${attempts}/${MAX_RETRIES})`, error);
+      console.error(
+        `❌ RabbitMQ connection failed (${attempts}/${MAX_RETRIES})`,
+        error,
+      );
       if (attempts === MAX_RETRIES) {
         throw new AppError(ErrorType.QUEUE_ERROR);
       }
@@ -36,7 +39,9 @@ export const connectRabbitMQ = async () => {
 
 export const publishToQueue = async (queue: string, message: any) => {
   if (!channel) await connectRabbitMQ();
-  channel?.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
+  channel?.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
+    persistent: true,
+  });
   console.log(`📤 Job sent to queue ${queue}:`, message);
 };
 
@@ -55,5 +60,3 @@ export const closeRabbitMQConnection = async () => {
     console.error("⚠️ Failed to close RabbitMQ connection:", error);
   }
 };
-
-

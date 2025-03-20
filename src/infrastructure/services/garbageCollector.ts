@@ -6,7 +6,10 @@ dotenv.config();
 
 const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
 const UPLOADS_TTL = parseInt(process.env.UPLOADS_TTL || "86400000", 10);
-const INTERVAL = parseInt(process.env.GARBAGE_COLLECTION_INTERVAL || "3600000", 10);
+const INTERVAL = parseInt(
+  process.env.GARBAGE_COLLECTION_INTERVAL || "3600000",
+  10,
+);
 
 const cleanUploads = () => {
   console.log("🧹 Running Garbage Collector for uploads...");
@@ -42,6 +45,8 @@ const cleanUploads = () => {
 };
 
 export const startGarbageCollector = () => {
-  console.log(`⏳ Starting Garbage Collector (Interval: ${INTERVAL / 60000} min)`);
+  console.log(
+    `⏳ Starting Garbage Collector (Interval: ${INTERVAL / 60000} min)`,
+  );
   setInterval(cleanUploads, INTERVAL);
 };

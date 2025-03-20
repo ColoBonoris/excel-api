@@ -8,7 +8,9 @@ const QUEUE_NAME = "file-processing";
 const consumeJobs = async () => {
   try {
     console.log("⚡ Worker connecting to RabbitMQ...");
-    const connection = await amqplib.connect("amqp://guest:guest@localhost:5672");
+    const connection = await amqplib.connect(
+      "amqp://guest:guest@localhost:5672",
+    );
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE_NAME, { durable: true });
 
@@ -36,7 +38,7 @@ const consumeJobs = async () => {
           }
         }
       },
-      { noAck: true }
+      { noAck: true },
     );
   } catch (error) {
     console.error("❌ Failed to connect to RabbitMQ:", error);

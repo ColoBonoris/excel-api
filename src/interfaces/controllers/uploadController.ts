@@ -23,18 +23,22 @@ export const uploadFile = asyncHandler(async (req: Request, res: Response) => {
 
   const allowedMimeTypes = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-excel"
+    "application/vnd.ms-excel",
   ];
-  
-  if (!allowedMimeTypes.includes(req.file.mimetype) || path.extname(req.file.originalname) !== ".xlsx") {
+
+  if (
+    !allowedMimeTypes.includes(req.file.mimetype) ||
+    path.extname(req.file.originalname) !== ".xlsx"
+  ) {
     throw new AppError(ErrorType.FORMAT_ERROR);
   }
 
   let parsedMapping;
   try {
-    parsedMapping = typeof req.body.mapping === "string"
-      ? JSON.parse(req.body.mapping)
-      : req.body.mapping;
+    parsedMapping =
+      typeof req.body.mapping === "string"
+        ? JSON.parse(req.body.mapping)
+        : req.body.mapping;
 
     parseMapping(parsedMapping);
   } catch (error: any) {
@@ -44,17 +48,16 @@ export const uploadFile = asyncHandler(async (req: Request, res: Response) => {
 
   const jobId = uuidv4();
   const filePath = path.join(UPLOADS_DIR, `${jobId}.xlsx`);
-  
+
   fs.renameSync(req.file.path, filePath);
 
   await createJob(jobId);
-  
+
   await publishToQueue("file-processing", {
     jobId,
     filePath,
-    mapping: parsedMapping
+    mapping: parsedMapping,
   });
 
   res.json({ jobId });
 });
-

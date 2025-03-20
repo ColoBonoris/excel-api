@@ -24,18 +24,20 @@ export interface MappingItem {
  *   { key: "nums",  parseFn: (val)=>{...} }
  * ]
  */
-export function parseMapping(rawMapping: Record<string, string>): MappingItem[] {
+export function parseMapping(
+  rawMapping: Record<string, string>,
+): MappingItem[] {
   if (typeof rawMapping !== "object" || rawMapping === null) {
     throw new Error("Invalid mapping: must be a non-null object.");
   }
 
   const typeMappings: Record<string, (val: any) => ParsedResult> = {
-    "number": (val: any) => {
+    number: (val: any) => {
       const num = Number(val);
       if (isNaN(num)) return { value: null, error: true };
       return { value: num };
     },
-    "string": (val: any) => {
+    string: (val: any) => {
       return { value: val == null ? "" : String(val).trim() };
     },
     "array<number>": (val: any) => {
@@ -62,12 +64,12 @@ export function parseMapping(rawMapping: Record<string, string>): MappingItem[] 
         }
         // ordenamos
         //@ts-ignore
-        const sorted = parsedArray.map(x => x.value).sort((a, b) => a - b);
+        const sorted = parsedArray.map((x) => x.value).sort((a, b) => a - b);
         return { value: sorted };
       } catch {
         return { value: null, error: true };
       }
-    }
+    },
   };
 
   const result: MappingItem[] = [];

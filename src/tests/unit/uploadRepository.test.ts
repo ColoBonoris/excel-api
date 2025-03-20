@@ -1,34 +1,39 @@
-// import { updateJob } from "../../infrastructure/database/repositories/uploadRepository";
-// import { Job } from "../../infrastructure/database/models/Job";
+// tests/unit/uploadRepository.test.ts
+import {
+  createJob,
+  deleteJob,
+  getJob,
+  updateJob,
+} from "../../infrastructure/database/repositories/uploadRepository";
 
-// describe("uploadRepository", () => {
-//   beforeAll(async () => {
-//     await Job.create({ referenceId: "test-job", status: "pending", jobErrors: [], result: null });
-//   });
+describe("uploadRepository (unit)", () => {
+  it("should create a new job", async () => {
+    const jobId = "test-job";
+    const job = await createJob(jobId);
+    expect(job.referenceId).toBe(jobId);
+    expect(job.status).toBe("pending");
+  });
 
-//   afterAll(async () => {
-//     await Job.deleteMany({});
-//   });
+  it("should update a job status to processing", async () => {
+    const jobId = "test-update";
+    await createJob(jobId);
+    const updated = await updateJob(jobId, { status: "processing" });
+    expect(updated?.status).toBe("processing");
+  });
 
-//   it("should update job status and result correctly", async () => {
-//     await updateJob("test-job", { status: "done", result: { data: [{ name: "John" }] } });
+  it("should get a job by referenceId", async () => {
+    const jobId = "test-get";
+    await createJob(jobId);
+    const foundJob = await getJob(jobId);
+    expect(foundJob).not.toBeNull();
+    expect(foundJob?.referenceId).toBe(jobId);
+  });
 
-//     const job = await Job.findOne({ referenceId: "test-job" });
-//     expect(job).not.toBeNull();
-//     expect(job?.status).toBe("done");
-//     expect(job?.result?.data.length).toBe(1);
-//     expect(job?.result?.data[0].name).toBe("John");
-//   });
-
-//   it("should add errors to job when updating", async () => {
-//     await updateJob("test-job", { jobErrors: [{ col: "age", row: 5 }] });
-
-//     const job = await Job.findOne({ referenceId: "test-job" });
-    
-//     expect(job).not.toBeNull();
-//     //@ts-ignore
-//     expect(job?.jobErrors.length).toBe(1);
-//     //@ts-ignore
-//     expect(job?.jobErrors[0].col).toBe("age");
-//   });
-// });
+  it("should delete a job", async () => {
+    const jobId = "test-delete";
+    await createJob(jobId);
+    await deleteJob(jobId);
+    const found = await getJob(jobId);
+    expect(found).toBeNull();
+  });
+});

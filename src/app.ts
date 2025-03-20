@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 // endpoints prefix
-app.use("/api", uploadRoutes); 
+app.use("/api", uploadRoutes);
 app.get("/", (req, res) => {
   res.send("API up and working");
 });
@@ -19,6 +19,6 @@ app.get("/", (req, res) => {
 // Set up swagger
 setupSwagger(app);
 
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 export default app;

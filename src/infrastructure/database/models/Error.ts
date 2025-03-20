@@ -1,4 +1,4 @@
 export interface ErrorEntry {
-    col: number,
-    row: number
+  col: number;
+  row: number;
 }

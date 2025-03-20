@@ -11,7 +11,6 @@ dotenv.config();
 let mongoServer: MongoMemoryServer;
 const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
 
-
 beforeAll(async () => {
   console.log("⏳ Setting up test environment...");
 
@@ -28,7 +27,12 @@ beforeAll(async () => {
   }));
 
   await Job.insertMany([
-    { referenceId: "job-1", status: "done", result: { data: [] }, jobErrors: [] },
+    {
+      referenceId: "job-1",
+      status: "done",
+      result: { data: [] },
+      jobErrors: [],
+    },
     { referenceId: "job-2", status: "pending", result: null, jobErrors: null },
   ]);
 
@@ -57,7 +61,7 @@ const cleanTestUploads = () => {
 afterAll(async () => {
   console.log("🛑 Cleaning up test environment...");
 
-  cleanTestUploads()
+  cleanTestUploads();
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();

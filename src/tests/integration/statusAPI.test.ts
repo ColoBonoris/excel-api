@@ -4,7 +4,12 @@ import { Job } from "../../infrastructure/database/models/Job";
 
 describe("GET /status/:jobId", () => {
   beforeAll(async () => {
-    await Job.create({ referenceId: "test-job", status: "processing", result: null, jobErrors: [] });
+    await Job.create({
+      referenceId: "test-job",
+      status: "processing",
+      result: null,
+      jobErrors: [],
+    });
   });
 
   afterAll(async () => {

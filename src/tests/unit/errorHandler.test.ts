@@ -2,6 +2,7 @@ import { errorMiddleware } from "../../middleware/errorHandler";
 import { AppError } from "../../errors/AppError";
 import { ErrorType } from "../../enums/errorTypes";
 import { Request, Response } from "express";
+import { ERROR_DEFINITIONS } from "../../errors/errorMessages";
 
 describe("errorHandler", () => {
   let mockReq: Partial<Request>;
@@ -22,7 +23,10 @@ describe("errorHandler", () => {
     errorMiddleware(error, mockReq as Request, mockRes as Response, next);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: ErrorType.VALIDATION_ERROR, message: "Validation failed" });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: ErrorType.VALIDATION_ERROR,
+      message: ERROR_DEFINITIONS[ErrorType.VALIDATION_ERROR].message,
+    });
   });
 
   it("should return 500 for unknown errors", () => {
@@ -30,6 +34,9 @@ describe("errorHandler", () => {
     errorMiddleware(error, mockReq as Request, mockRes as Response, next);
 
     expect(mockRes.status).toHaveBeenCalledWith(500);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: ErrorType.UNKNOWN_ERROR, message: "An unexpected error occurred" });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: ErrorType.UNKNOWN_ERROR,
+      message: ERROR_DEFINITIONS[ErrorType.UNKNOWN_ERROR].message,
+    });
   });
 });

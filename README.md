@@ -2,31 +2,36 @@
 
 - Docker should be installed to run the complete service, it runs MongoDB and RabbitMQ services, fundamental to the application's functionality
 
-
 # Installation
 
-```
+```bash
 git clone https://github.com/ColoBonoris/excel-api
 cd excel-api
 yarn install
-cp .env.example .env
+cp .env.example .env # Here you'll also find the api keys for both endpoints
 ```
-
 
 # Run app
 
+```bash
+yarn services:start # Runs RabbitMQ and MongoDB containers
+yarn worker # Starts the worker process
+yarn dev # Starts the server, should be done in other terminal since the previous one will be busy with the worker
 ```
-yarn services:start
-yarn worker
-yarn dev
+
+# Useful commands
+
+```bash
+yarn test # Runs all tests
+yarn services:stop # Stops both containers
 ```
 
 # Potential changes
+
 - Interrupted jobs are not being take in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
 - Testing could be way more extensive
 - Primitives permitted are a considerably short subset of TypeScript primitive datatypes
 - We could implement more workers for improving performance
-
 
 # Admitted types for each mapping field
 
@@ -34,7 +39,6 @@ yarn dev
 - For this first version, these are the only types accepted, fon enhancing, you should modify only `/src/utils/parseMapping.ts` or replace it with another mapping function
 - Mapping function can be way more modular and efficient
 - For adapting to the specifications, `Array <Number>` fields are ordered ascendent when mapping
-
 
 # Interacting with the API
 
@@ -149,6 +153,11 @@ curl -X POST "http://localhost:3000/api/upload" \
 
 `GET /api/status/{jobId}`
 
+You can optionally include two query parameters for pagination:
+
+- **`resultPage`** (number, optional): The 1-based page to retrieve for the result data. Default is `1`.
+- **`errorPage`** (number, optional): The 1-based page to retrieve for the error data. Default is `1`.
+
 ### **Response**
 
 | Field    | Type                                  | Description                                              |
@@ -173,21 +182,10 @@ curl -X POST "http://localhost:3000/api/upload" \
 {
   "status": "done",
   "result": [{ "name": "Alice", "age": 30, "scores": [4, 5, 6] }],
-  "errors": [{ "col": "age", "row": 3 }]
+  "errors": [{ "col": 2, "row": 3 }],
+  "resultPage": 0,
+  "errorPage": 0
 }
 ```
 
 ---
-
-## **Common Errors**
-
-| Error Message                   | Reason                                         |
-| ------------------------------- | ---------------------------------------------- |
-| `File and mapping are required` | Missing file or mapping header.                |
-| `Invalid mapping`               | Mapping is not a valid JSON object.            |
-| `Unknown mapping type`          | The mapping contains an unsupported type.      |
-| `Invalid value for Number`      | A value could not be converted to a number.    |
-| `Invalid item in Array<Number>` | A non-numeric value was found inside an array. |
-
-
-

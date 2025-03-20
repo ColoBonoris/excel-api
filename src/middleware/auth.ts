@@ -8,8 +8,12 @@ export const authMiddleware = (keyType: ApiKeyType) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const apiKey = req.header("x-api-key");
 
-    if (!apiKey || !validateApiKey(apiKey, keyType)) {
+    if (!apiKey) {
       return next(new AppError(ErrorType.UNAUTHORIZED));
+    }
+
+    if (!validateApiKey(apiKey, keyType)) {
+      return next(new AppError(ErrorType.FORBIDDEN));
     }
 
     next();

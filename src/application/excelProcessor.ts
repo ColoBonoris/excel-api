@@ -6,7 +6,7 @@ import { parseMapping, MappingItem } from "../utils/parseMapping";
 import {
   insertChunk,
   CHUNK_SIZE_RESULT,
-  CHUNK_SIZE_ERRORS
+  CHUNK_SIZE_ERRORS,
 } from "../infrastructure/database/repositories/jobDataRepository";
 import { ErrorEntry } from "../infrastructure/database/models/Error";
 
@@ -21,7 +21,7 @@ const ExcelJS = require("exceljs");
 export async function processExcelFile(
   jobId: string,
   filePath: string,
-  rawMapping: Record<string, string> // e.g. { name:"String", age:"Number", nums:"Array<Number>" }
+  rawMapping: Record<string, string>, // e.g. { name:"String", age:"Number", nums:"Array<Number>" }
 ) {
   // Marcamos "processing"
   await updateJob(jobId, { status: "processing" });
@@ -91,7 +91,7 @@ export async function processExcelFile(
 
         // Agregamos errores de celda
         if (rowErrors.length > 0) {
-          rowErrors.forEach(err => errorBuffer.push(err));
+          rowErrors.forEach((err) => errorBuffer.push(err));
           if (errorBuffer.length >= CHUNK_SIZE_ERRORS) {
             insertChunk(jobId, true, errorChunkIdx, errorBuffer);
             errorChunkIdx++;

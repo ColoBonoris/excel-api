@@ -8,7 +8,8 @@ const options: swaggerJSDoc.Options = {
     info: {
       title: "XLSX Processing API",
       version: "1.0.0",
-      description: "API documentation for handling XLSX uploads, status checks, and API Key management.",
+      description:
+        "API documentation for handling XLSX uploads, status checks, and API Key management.",
     },
     servers: [{ url: "http://localhost:3000/api" }],
     components: {
@@ -17,11 +18,11 @@ const options: swaggerJSDoc.Options = {
           type: "apiKey",
           in: "header",
           name: "x-api-key",
-          description: "Enter a valid API Key to access protected endpoints."
-        }
-      }
+          description: "Enter a valid API Key to access protected endpoints.",
+        },
+      },
     },
-    security: [{ ApiKeyAuth: [] }] 
+    security: [{ ApiKeyAuth: [] }],
   },
   apis: ["./src/interfaces/routes/*.ts"],
 };

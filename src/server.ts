@@ -13,7 +13,9 @@ const startServer = async () => {
   await connectRabbitMQ();
   startGarbageCollector();
 
-  app.listen(PORT, () => { console.log(`🚀 Server running at http://localhost:${PORT}`); });
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
 };
 
 startServer();

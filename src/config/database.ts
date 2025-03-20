@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI ;
+const MONGO_URI = process.env.MONGO_URI;
 const isTestEnv = process.env.NODE_ENV === "test";
 
 const MAX_RETRIES = 5;
@@ -13,7 +13,7 @@ const RETRY_DELAY = 5000; // 5 secs
 
 export const connectDB = async () => {
   let attempts = 0;
-  console.log(MONGO_URI)
+  console.log(MONGO_URI);
 
   while (attempts < MAX_RETRIES) {
     try {
@@ -23,7 +23,10 @@ export const connectDB = async () => {
       return;
     } catch (error) {
       attempts++;
-      console.error(`❌ MongoDB connection failed (${attempts}/${MAX_RETRIES})`, error);
+      console.error(
+        `❌ MongoDB connection failed (${attempts}/${MAX_RETRIES})`,
+        error,
+      );
       if (attempts === MAX_RETRIES && !isTestEnv) {
         throw new AppError(ErrorType.DATABASE_ERROR);
       }

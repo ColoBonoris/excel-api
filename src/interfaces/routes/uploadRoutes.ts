@@ -41,7 +41,12 @@ const upload = multer({ dest: "uploads/" });
  *       403:
  *         description: Invalid API Key
  */
-router.post("/upload", authMiddleware(ApiKeyType.UPLOAD), upload.single("file"), uploadFile);
+router.post(
+  "/upload",
+  authMiddleware(ApiKeyType.UPLOAD),
+  upload.single("file"),
+  uploadFile,
+);
 
 /**
  * @swagger

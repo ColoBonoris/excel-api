@@ -7,7 +7,7 @@ export async function insertChunk(
   jobId: string,
   isError: boolean,
   chunkIndex: number,
-  rows: any[]
+  rows: any[],
 ): Promise<IJobChunk> {
   return await JobData.create({ jobId, isError, chunkIndex, rows });
 }
@@ -15,7 +15,7 @@ export async function insertChunk(
 export async function getChunk(
   jobId: string,
   isError: boolean,
-  chunkIndex: number
+  chunkIndex: number,
 ): Promise<any[] | null> {
   const doc = await JobData.findOne({ jobId, isError, chunkIndex });
   return doc ? doc.rows : null;

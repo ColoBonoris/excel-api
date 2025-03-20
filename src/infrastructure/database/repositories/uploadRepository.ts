@@ -5,11 +5,14 @@ export const createJob = async (jobId: string): Promise<IJob> => {
   return await job.save();
 };
 
-export const updateJob = async (jobId: string, data: Partial<IJob>): Promise<IJob | null> => {
+export const updateJob = async (
+  jobId: string,
+  data: Partial<IJob>,
+): Promise<IJob | null> => {
   return await Job.findOneAndUpdate(
     { referenceId: jobId },
     { $set: data },
-    { new: true }
+    { new: true },
   );
 };
 
