@@ -10,6 +10,7 @@ cd excel-api
 yarn install
 cp .env.example .env # Here you'll also find the api keys for both endpoints
 ```
+Note: first run (and not further ones) could fail connecing the worker or the app with any of the services, I ran into this problem and the sollution was only running the worker or app once again
 
 # Run app
 
@@ -25,6 +26,7 @@ yarn dev # Starts the server, should be done in other terminal since the previou
 yarn test # Runs all tests
 yarn services:stop # Stops both containers
 ```
+For testing the app, you can use the swagger docs and the files `large_test.xlsx` and `test_data` with the mapping inside of `test_mapping.json` as good examples.
 
 # Potential changes
 
