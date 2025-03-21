@@ -10,7 +10,7 @@ cd excel-api
 yarn install
 cp .env.example .env # Here you'll also find the api keys for both endpoints
 ```
-Note: first run (and not further ones) could fail connecing the worker or the app with any of the services, I ran into this problem and the sollution was only running the worker or app once again
+Note: first run (and not further ones) could fail connecting the worker or the app with any of the services, I ran into this problem and the sollution was only running the worker or app once again
 
 # Run app
 
@@ -26,20 +26,20 @@ yarn dev # Starts the server, should be done in other terminal since the previou
 yarn test # Runs all tests
 yarn services:stop # Stops both containers
 ```
-For testing the app, you can use the swagger docs and the files `large_test.xlsx` and `test_data` with the mapping inside of `test_mapping.json` as good examples.
+Note: for testing the app, you can use the swagger docs and the files `large_test.xlsx` / `test_data` with the mapping inside of `test_mapping.json` as good examples.
 
 # Potential changes
 
-- Interrupted jobs are not being take in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
+- Interrupted jobs are not being taken in consideration, for it we should simply use RabbitMQ's ACK functionality, but avoiding filling up the queue
 - Testing could be way more extensive
-- Primitives permitted are a considerably short subset of TypeScript primitive datatypes
+- Primitives allowed are a considerably short subset of TypeScript's primitive datatypes
 - We could implement more workers for improving performance
 
 # Admitted types for each mapping field
 
 - Primitives: `String`, `Number`, `Array <Number>`
-- For this first version, these are the only types accepted, fon enhancing, you should modify only `/src/utils/parseMapping.ts` or replace it with another mapping function
-- Mapping function can be way more modular and efficient
+- For this first version, these are the only types accepted, for enhancing, you should only modify `/src/utils/parseMapping.ts` or replace it with another mapping function
+- Mapping function can be way more modular and maybe more efficient, we are using streams for having at least some efficiency when mapping big documents
 - For adapting to the specifications, `Array <Number>` fields are ordered ascendent when mapping
 
 # Interacting with the API
