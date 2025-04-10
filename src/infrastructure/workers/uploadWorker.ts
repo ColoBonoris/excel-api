@@ -1,7 +1,7 @@
 import { connectDB } from "../../config/database";
 import amqplib from "amqplib";
 import fs from "fs";
-import { processExcelFile } from "../../application/excelProcessor";
+import { processExcelFile } from "../../application/usecases/excelProcessor";
 
 const QUEUE_NAME = "file-processing";
 

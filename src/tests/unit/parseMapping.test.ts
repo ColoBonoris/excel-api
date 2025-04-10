@@ -1,4 +1,4 @@
-import { parseMapping } from "../../utils/parseMapping";
+import { parseMapping } from "../../application/utils/parseMapping";
 
 describe("parseMapping", () => {
   it("should correctly parse simple types", () => {

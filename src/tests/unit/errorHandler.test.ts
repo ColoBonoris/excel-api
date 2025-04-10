@@ -1,4 +1,4 @@
-import { errorMiddleware } from "../../middleware/errorHandler";
+import { errorMiddleware } from "../../interfaces/middleware/errorHandler";
 import { AppError } from "../../errors/AppError";
 import { ErrorType } from "../../enums/errorTypes";
 import { Request, Response } from "express";

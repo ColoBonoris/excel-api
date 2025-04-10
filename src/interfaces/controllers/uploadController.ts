@@ -3,11 +3,11 @@ import fs from "fs";
 import path from "path";
 import { createJob } from "../../infrastructure/database/repositories/uploadRepository";
 import { v4 as uuidv4 } from "uuid";
-import { parseMapping } from "../../utils/parseMapping";
+import { parseMapping } from "../../application/utils/parseMapping";
 import { publishToQueue } from "../../infrastructure/services/rabbitmqService";
 import { AppError } from "../../errors/AppError";
 import { ErrorType } from "../../enums/errorTypes";
-import { asyncHandler } from "../../middleware/asyncHandler";
+import { asyncHandler } from "../middleware/asyncHandler";
 
 const UPLOADS_DIR = path.join(__dirname, "../../uploads/");
 

@@ -1,14 +1,14 @@
 // src/usecases/processExcelFile.ts
 import fs from "fs";
 import path from "path";
-import { updateJob } from "../infrastructure/database/repositories/uploadRepository";
+import { updateJob } from "../../infrastructure/database/repositories/uploadRepository";
 import { parseMapping, MappingItem } from "../utils/parseMapping";
 import {
   insertChunk,
   CHUNK_SIZE_RESULT,
   CHUNK_SIZE_ERRORS,
-} from "../infrastructure/database/repositories/jobDataRepository";
-import { ErrorEntry } from "../infrastructure/database/models/Error";
+} from "../../infrastructure/database/repositories/jobDataRepository";
+import { ErrorEntry } from "../../infrastructure/database/models/Error";
 
 const ExcelJS = require("exceljs");
 

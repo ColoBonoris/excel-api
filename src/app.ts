@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import uploadRoutes from "./interfaces/routes/uploadRoutes";
 import { setupSwagger } from "./config/swagger";
-import { errorMiddleware } from "./middleware/errorHandler";
+import { errorMiddleware } from "./interfaces/middleware/errorHandler";
 import { Request, Response, NextFunction } from "express";
 
 const app = express();

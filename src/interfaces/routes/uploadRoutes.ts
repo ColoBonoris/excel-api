@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { uploadFile } from "../controllers/uploadController";
 import { getStatus } from "../controllers/statusController";
-import { authMiddleware } from "../../middleware/auth";
+import { authMiddleware } from "../middleware/auth";
 import { ApiKeyType } from "../../enums/ApiKeys";
 
 const router = express.Router();

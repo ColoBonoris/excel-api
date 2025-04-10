@@ -52,16 +52,16 @@ For testing the app, you can use the swagger docs and the files `large_test.xlsx
 
 ### **Headers**
 
-| Header      | Description                           | Required |
-| ----------- | ------------------------------------- | -------- |
-| `x-api-key` | API Key for authentication            | ✅ Yes   |
-| `mapping`   | JSON object defining the data mapping | ✅ Yes   |
+| Header      | Description                           |
+| ----------- | ------------------------------------- |
+| `x-api-key` | API Key for authentication            |
+| `mapping`   | JSON object defining the data mapping |
 
 ### **Body (multipart/form-data)**
 
-| Field  | Type         | Description              | Required |
-| ------ | ------------ | ------------------------ | -------- |
-| `file` | File (.xlsx) | The Excel file to upload | ✅ Yes   |
+| Field  | Type         | Description              |
+| ------ | ------------ | ------------------------ |
+| `file` | File (.xlsx) | The Excel file to upload |
 
 ---
 

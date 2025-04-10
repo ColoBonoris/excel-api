@@ -6,18 +6,18 @@ export interface ParsedResult {
 }
 
 export interface MappingItem {
-  key: string; // la clave original en rawMapping (p.ej. "name", "age")
+  key: string; // the original key inside of rawMapping (eg. "name", "age")
   parseFn: (val: any) => ParsedResult;
 }
 
 /**
- * parseMapping recibe un `rawMapping` como:
+ * parseMapping receives a `rawMapping` as:
  * {
  *   "name": "String",
  *   "age": "Number",
  *   "nums": "Array<Number>"
  * }
- * y retorna un array en el mismo orden de propiedades:
+ * and returns an array of the same properties order:
  * [
  *   { key: "name",  parseFn: (val)=>{...} },
  *   { key: "age",   parseFn: (val)=>{...} },
@@ -62,7 +62,7 @@ export function parseMapping(
         if (parsedArray.some((x) => x.error)) {
           return { value: null, error: true };
         }
-        // ordenamos
+        // ordering
         //@ts-ignore
         const sorted = parsedArray.map((x) => x.value).sort((a, b) => a - b);
         return { value: sorted };
@@ -75,14 +75,13 @@ export function parseMapping(
   const result: MappingItem[] = [];
 
   for (const [rawKey, rawType] of Object.entries(rawMapping)) {
-    // normalizar el tipo
+    // normalizing type
     const normalizedType = rawType.trim().toLowerCase().replace(/\s+/g, "");
     if (!typeMappings[normalizedType]) {
       throw new Error(`Unknown mapping type for key "${rawKey}": ${rawType}`);
     }
 
-    // no normalizamos la key, para devolverla tal cual (o si deseas, podés normalizar a .trim() etc.)
-    // pero la idea es que sea la misma que en rawMapping
+    // keys are not being normalizeed, it is possible to have it done here
     const parseFn = typeMappings[normalizedType];
     result.push({ key: rawKey, parseFn });
   }
