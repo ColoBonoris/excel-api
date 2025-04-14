@@ -13,10 +13,9 @@ import { ErrorEntry } from "../../infrastructure/database/models/Error";
 const ExcelJS = require("exceljs");
 
 /**
- * - Ignora el header del Excel (fila #1)
- * - Usa la orden de `rawMapping` para parsear celdas
- * - Almacena filas y errores en chunking,
- *   pero con las keys definidas en rawMapping (ej "name","age","nums")
+ * - Ignores header (line 1)
+ * - Uses rawmapping order for parsing
+ * - Storages results and errors in chunks using row and column indexes
  */
 export async function processExcelFile(
   jobId: string,
@@ -38,20 +37,20 @@ export async function processExcelFile(
       worksheets: "emit",
     });
 
-    // Buffers y chunk logic
+    // Buffers & chunk logic
     let resultBuffer: any[] = [];
     let errorBuffer: any[] = [];
     let resultChunkIdx = 0;
     let errorChunkIdx = 0;
 
-    let headerSkipped = false; // saltamos la 1ra fila
+    let headerSkipped = false; // skip first row
 
     workbookReader.on("worksheet", (worksheet: any) => {
       worksheet.on("row", (row: any) => {
         const rowIndex = row.number;
         const rowData = row.values; // [undef, cell1, cell2, cell3...]
 
-        // Saltar la primera fila
+        // If header row, skip it
         if (!headerSkipped) {
           headerSkipped = true;
           return;
@@ -60,10 +59,10 @@ export async function processExcelFile(
         const rowObj: Record<string, any> = {};
         const rowErrors: ErrorEntry[] = [];
 
-        // Recorremos mappingArray para parsear cada columna
+        // Iteration over columns for parsing
         for (let c = 0; c < numCols; c++) {
           const { key, parseFn } = mappingArray[c];
-          // rowData[c+1] => la celda real
+          // rowData[c+1] => real cell
           const cellValue = rowData[c + 1];
 
           if (!parseFn) {
@@ -81,7 +80,7 @@ export async function processExcelFile(
           }
         }
 
-        // Agregamos la fila en resultBuffer
+        // adding result to buffer
         resultBuffer.push(rowObj);
         if (resultBuffer.length >= CHUNK_SIZE_RESULT) {
           insertChunk(jobId, false, resultChunkIdx, resultBuffer);
@@ -89,7 +88,7 @@ export async function processExcelFile(
           resultBuffer = [];
         }
 
-        // Agregamos errores de celda
+        // adding errors to buffer
         if (rowErrors.length > 0) {
           rowErrors.forEach((err) => errorBuffer.push(err));
           if (errorBuffer.length >= CHUNK_SIZE_ERRORS) {
@@ -112,7 +111,7 @@ export async function processExcelFile(
     });
 
     workbookReader.on("end", async () => {
-      // Vaciamos buffers
+      // emptying buffers
       if (resultBuffer.length > 0) {
         await insertChunk(jobId, false, resultChunkIdx, resultBuffer);
       }

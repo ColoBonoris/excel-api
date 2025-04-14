@@ -3,6 +3,8 @@ import app from "./app";
 import { connectDB } from "./config/database";
 import { connectRabbitMQ } from "./infrastructure/services/rabbitmqService";
 import { startGarbageCollector } from "./infrastructure/services/garbageCollector";
+import "reflect-metadata";
+import "./container";
 
 dotenv.config();
 
