@@ -18,4 +18,4 @@ const JobDataSchema = new mongoose.Schema<IJobChunk>({
 
 JobDataSchema.index({ jobId: 1, isError: 1, chunkIndex: 1 }, { unique: true });
 
-export const JobData = mongoose.model<IJobChunk>("JobData", JobDataSchema);
+export const JobDataModel = mongoose.model<IJobChunk>("JobData", JobDataSchema);

@@ -1,8 +1,8 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { Job } from "../infrastructure/database/models/Job";
+import { Job } from "../infrastructure/database/models/JobModel";
 import dotenv from "dotenv";
-import { closeRabbitMQConnection } from "../infrastructure/services/rabbitmqService";
+import { closeRabbitMQConnection } from "../infrastructure/services/RabbitMQQueueService";
 import path from "path";
 import fs from "fs";
 

@@ -4,7 +4,7 @@ import {
   deleteJob,
   getJob,
   updateJob,
-} from "../../infrastructure/database/repositories/uploadRepository";
+} from "../../infrastructure/database/repositories/JobRepository";
 
 describe("uploadRepository (unit)", () => {
   it("should create a new job", async () => {

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import app from "./app";
 import { connectDB } from "./config/database";
-import { connectRabbitMQ } from "./infrastructure/services/rabbitmqService";
+import { connectRabbitMQ } from "./infrastructure/services/RabbitMQQueueService";
 import { startGarbageCollector } from "./infrastructure/services/garbageCollector";
 import "reflect-metadata";
 import "./container";

@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../app";
-import { Job } from "../../infrastructure/database/models/Job";
+import { Job } from "../../infrastructure/database/models/JobModel";
 
 describe("GET /status/:jobId", () => {
   beforeAll(async () => {

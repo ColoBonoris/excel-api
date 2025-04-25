@@ -1,4 +1,4 @@
-import { JobData, IJobChunk } from "../models/JobData";
+import { JobDataModel, IJobChunk } from "../models/JobDataModel";
 
 export const CHUNK_SIZE_RESULT = 100;
 export const CHUNK_SIZE_ERRORS = 1000;
@@ -9,7 +9,7 @@ export async function insertChunk(
   chunkIndex: number,
   rows: any[],
 ): Promise<IJobChunk> {
-  return await JobData.create({ jobId, isError, chunkIndex, rows });
+  return await JobDataModel.create({ jobId, isError, chunkIndex, rows });
 }
 
 export async function getChunk(
@@ -17,10 +17,10 @@ export async function getChunk(
   isError: boolean,
   chunkIndex: number,
 ): Promise<any[] | null> {
-  const doc = await JobData.findOne({ jobId, isError, chunkIndex });
+  const doc = await JobDataModel.findOne({ jobId, isError, chunkIndex });
   return doc ? doc.rows : null;
 }
 
 export async function deleteJobChunks(jobId: string): Promise<void> {
-  await JobData.deleteMany({ jobId });
+  await JobDataModel.deleteMany({ jobId });
 }

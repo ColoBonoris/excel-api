@@ -1,14 +1,13 @@
 // src/usecases/processExcelFile.ts
 import fs from "fs";
 import path from "path";
-import { updateJob } from "../../infrastructure/database/repositories/uploadRepository";
 import { parseMapping, MappingItem } from "../utils/parseMapping";
 import {
   insertChunk,
   CHUNK_SIZE_RESULT,
   CHUNK_SIZE_ERRORS,
-} from "../../infrastructure/database/repositories/jobDataRepository";
-import { ErrorEntry } from "../../infrastructure/database/models/Error";
+} from "../../infrastructure/database/repositories/JobDataRepository";
+import { ErrorModel } from "../../infrastructure/database/models/ErrorModel";
 
 const ExcelJS = require("exceljs");
 
@@ -57,7 +56,7 @@ export async function processExcelFile(
         }
 
         const rowObj: Record<string, any> = {};
-        const rowErrors: ErrorEntry[] = [];
+        const rowErrors: ErrorModel[] = [];
 
         // Iteration over columns for parsing
         for (let c = 0; c < numCols; c++) {

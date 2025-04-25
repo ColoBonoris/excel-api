@@ -1,4 +1,4 @@
-export interface ErrorEntry {
+export interface ErrorModel {
   col: number;
   row: number;
 }

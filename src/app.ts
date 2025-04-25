@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import uploadRoutes from "./interfaces/routes/uploadRoutes";
+import uploadRoutes from "./interfaces/routes/uploadRoute";
 import { setupSwagger } from "./config/swagger";
 import { errorMiddleware } from "./interfaces/middleware/errorHandler";
 import { Request, Response, NextFunction } from "express";

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getJob } from "../../infrastructure/database/repositories/uploadRepository";
+import { getJob } from "../../infrastructure/database/repositories/JobRepository";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { getChunk } from "../../infrastructure/database/repositories/jobDataRepository";
+import { getChunk } from "../../infrastructure/database/repositories/JobDataRepository";
 
 export const getStatus = asyncHandler(async (req: Request, res: Response) => {
   const job = await getJob(req.params.jobId);

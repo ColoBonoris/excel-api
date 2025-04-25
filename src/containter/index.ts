@@ -1,8 +1,13 @@
-// src/container/index.ts
-import { container } from "tsyringe";
-import { UploadService } from "../infrastructure/services/UploadService";
-import { IUploadService } from "../domain/services/IUploadService";
+import { container } from 'tsyringe';
+import { IJobRepository } from '../domain/repositories/IJobRepository';
+import { IQueueService } from '../domain/repositories/IQueueService';
+import { RabbitMQQueueService } from '../infrastructure/services/RabbitMQQueueService';
+import { JobRepository } from '../infrastructure/database/repositories/JobRepository';
 
-container.register<IUploadService>("UploadService", {
-  useClass: UploadService,
+container.register<IJobRepository>('JobRepository', {
+  useClass: JobRepository,
+});
+
+container.register<IQueueService>('QueueService', {
+  useClass: RabbitMQQueueService,
 });

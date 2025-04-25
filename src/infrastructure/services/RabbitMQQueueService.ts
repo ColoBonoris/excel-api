@@ -2,6 +2,7 @@ import amqplib from "amqplib";
 import { AppError } from "../../errors/AppError";
 import { ErrorType } from "../../enums/errorTypes";
 import dotenv from "dotenv";
+import { injectable } from "tsyringe";
 
 dotenv.config();
 
@@ -60,3 +61,16 @@ export const closeRabbitMQConnection = async () => {
     console.error("⚠️ Failed to close RabbitMQ connection:", error);
   }
 };
+
+// TODO: implement this OK, copilot suggests graceful shutdown
+@injectable()
+export class RabbitMQQueueService {
+  async publish(jobId: string, file: Buffer): Promise<void> {
+    if (!channel) await connectRabbitMQ();
+    const message = { jobId, file: file.toString('base64') };
+    channel?.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)), {
+      persistent: true,
+    });
+    console.log(`📤 Job sent to queue ${QUEUE_NAME}:`, jobId);
+  }
+}

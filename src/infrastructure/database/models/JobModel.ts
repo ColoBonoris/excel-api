@@ -23,4 +23,4 @@ JobSchema.pre<IJob>("save", function (next) {
   next();
 });
 
-export const Job = mongoose.model<IJob>("Job", JobSchema);
+export const JobModel = mongoose.model<IJob>("Job", JobSchema);
