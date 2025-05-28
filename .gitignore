@@ -24,6 +24,7 @@ uploads/
 coverage/
 .cache/
 .nyc_output/
+notes/
 
 # Archivos de entorno y configuración sensible
 .env
